@@ -12,7 +12,7 @@ Data::Data()
 Data::Data(const char* filename)
 {
     rootFile = new TFile(filename);
-    TH2F *hRaw = (TH2F*)rootFile->Get("F");
+    TH2F *hRaw = (TH2F*)rootFile->Get("hW");
     wf = new Waveforms(hRaw);
 }
 

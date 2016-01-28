@@ -9,7 +9,6 @@
     gROOT->ProcessLine( include + prefix );
     gROOT->ProcessLine( load + prefix + "/Waveforms.cc+" );
     gROOT->ProcessLine( load + prefix + "/Data.cc+" );
-    // gROOT->ProcessLine( load + prefix + "/MCEvent.cc+" );
 
     prefix = "../viewer";
     gROOT->ProcessLine( include + prefix );

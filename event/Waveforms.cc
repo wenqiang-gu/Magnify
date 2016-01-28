@@ -4,6 +4,7 @@
 #include "TBox.h"
 #include "TColor.h"
 #include "TDirectory.h"
+#include "TString.h"
 
 #include <iostream>
 #include <vector>
@@ -12,23 +13,35 @@ using namespace std;
 Waveforms::Waveforms()
 {}
 
-Waveforms::Waveforms(TH2F *h)
+Waveforms::Waveforms(TH2F *h, TString name, TString title)
 {
+    // 2D hist: x: channel id; y: tdc 0 - 9600 or 0 - 9600/4
     hOrig = h;
-    // cout << hOrig->GetName() << endl;
-    nBinsX = hOrig->GetNbinsX();
-    nBinsY = hOrig->GetNbinsY();
+    nChannels = hOrig->GetNbinsX();
+    nTDCs = hOrig->GetNbinsY();
+    fName = (name == "" ? hOrig->GetName() : name.Data());
+    fTitle = (title == "" ? hOrig->GetTitle() : title.Data());
 
     const int DUMMY_NBINS = 100;
-    hDummy = new TH2F("hDummy", "", DUMMY_NBINS, 0, nBinsX, DUMMY_NBINS, 0, nBinsY);
+    hDummy = new TH2F(
+        TString::Format("hDummy_%s", fName.Data()),
+        fTitle,
+        DUMMY_NBINS, hOrig->GetXaxis()->GetBinLowEdge(0), hOrig->GetXaxis()->GetBinUpEdge(nChannels),
+        DUMMY_NBINS, hOrig->GetYaxis()->GetBinLowEdge(0), hOrig->GetYaxis()->GetBinUpEdge(nTDCs)
+    );
 
     double thresh = 4;
     TBox *box = 0;
-    for (int i=1; i<=nBinsX; i++) {
-        for (int j=1; j<=nBinsY; j++) {
+    for (int i=1; i<=nChannels; i++) {
+        for (int j=1; j<=nTDCs; j++) {
             double content = hOrig->GetBinContent(i, j);
             if (content>thresh) {
-                box = new TBox(i-0.5, j-0.5, i+0.5, j+0.5);
+                box = new TBox(
+                    hOrig->GetXaxis()->GetBinLowEdge(i),
+                    hOrig->GetYaxis()->GetBinLowEdge(j),
+                    hOrig->GetXaxis()->GetBinUpEdge(i),
+                    hOrig->GetYaxis()->GetBinUpEdge(j)
+                );
                 box->SetFillColor(kRed);
                 hits.push_back(box);
             }
@@ -55,14 +68,22 @@ void Waveforms::Draw2D()
     }
 }
 
-void Waveforms::Draw1D(int wireNo)
+void Waveforms::Draw1D(int chanNo, const char* options)
 {
-    TH1F *hWire = (TH1F*)gDirectory->FindObject("hWire");
+    TString name = TString::Format("hWire_%s", fName.Data());
+    TString title = TString::Format("Channle %i", chanNo);
+
+    TH1F *hWire = (TH1F*)gDirectory->FindObject(name);
     if (hWire) delete hWire;
 
-    hWire = new TH1F("hWire", "Wire No.", nBinsY, 0, nBinsY);
-    for (int i=1; i<=nBinsY; i++) {
-        hWire->SetBinContent(i, hOrig->GetBinContent(wireNo, i));
+    hWire = new TH1F(name, title.Data(),
+        nTDCs,
+        hOrig->GetYaxis()->GetBinLowEdge(0),
+        hOrig->GetYaxis()->GetBinUpEdge(nTDCs)
+    );
+    int binNo = hOrig->GetXaxis()->FindBin(chanNo);
+    for (int i=1; i<=nTDCs; i++) {
+        hWire->SetBinContent(i, hOrig->GetBinContent(binNo, i));
     }
-    hWire->Draw();
+    hWire->Draw(options);
 }

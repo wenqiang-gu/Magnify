@@ -2,6 +2,7 @@
 #define WAVEFORMS_H
 
 #include <vector>
+#include "TString.h"
 
 class TH2F;
 class TBox;
@@ -9,18 +10,20 @@ class TBox;
 class Waveforms {
 public:
     Waveforms();
-    Waveforms(TH2F *h);
+    Waveforms(TH2F *h, TString name="", TString title="");
     virtual ~Waveforms();
 
     void Draw2D();
-    void Draw1D(int wireNo);
+    void Draw1D(int chanNo, const char* options="");
 
     TH2F *hOrig;
     TH2F *hDummy;
     vector<TBox*> hits;
 
-    int nBinsX;
-    int nBinsY;
+    int nChannels;  // nBinsX
+    int nTDCs;       // nBinsY
+    TString fName;
+    TString fTitle;
 };
 
 #endif

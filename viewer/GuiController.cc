@@ -9,6 +9,7 @@
 #include "TSystem.h"
 #include "TExec.h"
 #include "TROOT.h"
+#include "TMath.h"
 
 #include "TCanvas.h"
 #include "TH2F.h"
@@ -24,7 +25,7 @@ GuiController::GuiController(const TGWindow *p, int w, int h, const char* filena
     vw = mw->fViewWindow;
     cw = mw->fControlWindow;
 
-    data = new Data("../data/test.root");
+    data = new Data("../data/dummy.root");
     vw->can->cd(1);
     data->wf->Draw2D();
 
@@ -61,7 +62,7 @@ void GuiController::ProcessCanvasEvent(Int_t ev, Int_t x, Int_t y, TObject *sele
         double yy = pad->AbsPixeltoY(y);
         cout << xx << ", " << yy << endl;
         vw->can->cd(7);
-        data->wf->Draw1D(xx);
+        data->wf->Draw1D( TMath::Nint(xx) ); // round
         vw->can->GetPad(7)->Modified();
         vw->can->GetPad(7)->Update();
     }

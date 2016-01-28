@@ -5,5 +5,6 @@
 ### Usage
 
 ```
+cd scripts/
 root -l run.C
 ```
