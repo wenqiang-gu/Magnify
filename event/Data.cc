@@ -4,6 +4,7 @@
 #include "TH2F.h"
 #include "TFile.h"
 
+#include <vector>
 using namespace std;
 
 Data::Data()
@@ -12,8 +13,14 @@ Data::Data()
 Data::Data(const char* filename)
 {
     rootFile = new TFile(filename);
-    TH2F *hRaw = (TH2F*)rootFile->Get("hW");
-    wf = new Waveforms(hRaw);
+
+    wfs.push_back( new Waveforms((TH2F*)rootFile->Get("hU")) );
+    wfs.push_back( new Waveforms((TH2F*)rootFile->Get("hV")) );
+    wfs.push_back( new Waveforms((TH2F*)rootFile->Get("hW")) );
+
+    wfs.push_back( new Waveforms((TH2F*)rootFile->Get("hUD")) );
+    wfs.push_back( new Waveforms((TH2F*)rootFile->Get("hVD")) );
+    wfs.push_back( new Waveforms((TH2F*)rootFile->Get("hWD")) );
 }
 
 Data::~Data()

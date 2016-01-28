@@ -1,6 +1,7 @@
 #include "Waveforms.h"
 
 #include "TH2F.h"
+#include "TH1F.h"
 #include "TBox.h"
 #include "TColor.h"
 #include "TDirectory.h"
@@ -68,7 +69,7 @@ void Waveforms::Draw2D()
     }
 }
 
-void Waveforms::Draw1D(int chanNo, const char* options)
+TH1F* Waveforms::Draw1D(int chanNo, const char* options)
 {
     TString name = TString::Format("hWire_%s", fName.Data());
     TString title = TString::Format("Channle %i", chanNo);
@@ -86,4 +87,6 @@ void Waveforms::Draw1D(int chanNo, const char* options)
         hWire->SetBinContent(i, hOrig->GetBinContent(binNo, i));
     }
     hWire->Draw(options);
+
+    return hWire;
 }

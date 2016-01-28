@@ -5,6 +5,7 @@
 #include "TString.h"
 
 class TH2F;
+class TH1F;
 class TBox;
 
 class Waveforms {
@@ -14,7 +15,7 @@ public:
     virtual ~Waveforms();
 
     void Draw2D();
-    void Draw1D(int chanNo, const char* options="");
+    TH1F* Draw1D(int chanNo, const char* options="");
 
     TH2F *hOrig;
     TH2F *hDummy;

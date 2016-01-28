@@ -13,9 +13,12 @@
 
 #include "TCanvas.h"
 #include "TH2F.h"
+#include "TH1F.h"
 #include "TBox.h"
+#include "TColor.h"
 
 #include <iostream>
+#include <vector>
 using namespace std;
 
 
@@ -26,13 +29,9 @@ GuiController::GuiController(const TGWindow *p, int w, int h, const char* filena
     cw = mw->fControlWindow;
 
     data = new Data("../data/dummy.root");
-    vw->can->cd(1);
-    data->wf->Draw2D();
-
-    TH2F *hh = new TH2F("h", "h", 10, 0, 3800, 10, 0, 9600);
-    for (int i=2; i<=9; i++) {
-        vw->can->cd(i);
-        hh->Draw("colz");
+    for (int i=0; i<6; i++) {
+        vw->can->cd(i+1);
+        data->wfs.at(i)->Draw2D();
     }
 
     InitConnections();
@@ -58,13 +57,23 @@ void GuiController::ProcessCanvasEvent(Int_t ev, Int_t x, Int_t y, TObject *sele
     if (ev == 11) { // clicked
         if (!(selected->IsA() == TH2F::Class() || selected->IsA() == TBox::Class())) return;
         TVirtualPad* pad = vw->can->GetClickSelectedPad();
+        int padNo = pad->GetNumber();
         double xx = pad->AbsPixeltoX(x);
         double yy = pad->AbsPixeltoY(y);
-        cout << xx << ", " << yy << endl;
-        vw->can->cd(7);
-        data->wf->Draw1D( TMath::Nint(xx) ); // round
-        vw->can->GetPad(7)->Modified();
-        vw->can->GetPad(7)->Update();
+        cout << "pad " << padNo << ": (" << xx << ", " << yy << ")" << endl;
+
+        int drawPad = (padNo-1) % 3 + 7;
+        vw->can->cd(drawPad);
+        if (padNo<=6) {
+            int wfNo = padNo - 1;
+            wfNo = wfNo < 3 ? wfNo : wfNo-3;  // draw raw first
+            int chanNo = TMath::Nint(xx); // round
+            data->wfs.at(wfNo)->Draw1D(chanNo);
+            TH1F *h = data->wfs.at(wfNo+3)->Draw1D(chanNo, "same" ); // draw calib
+            h->SetLineColor(kRed);
+        }
+        vw->can->GetPad(drawPad)->Modified();
+        vw->can->GetPad(drawPad)->Update();
     }
 
 }

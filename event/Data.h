@@ -5,6 +5,8 @@ class TH2F;
 class TFile;
 class Waveforms;
 
+#include <vector>
+
 class Data {
 public:
     Data();
@@ -13,7 +15,7 @@ public:
     virtual ~Data();
 
     TFile *rootFile;
-    Waveforms *wf;
+    vector<Waveforms*> wfs;
 
 };
 
