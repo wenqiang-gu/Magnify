@@ -1,3 +1,4 @@
+void loadClasses()
 {
     TString include = ".include ";
     TString load = ".L ";

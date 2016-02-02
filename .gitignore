@@ -11,6 +11,7 @@
 *.a
 *.exe
 *.d
+*.pcm
 
 # generated files #
 ###################
