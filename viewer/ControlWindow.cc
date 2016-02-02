@@ -25,8 +25,11 @@ ControlWindow::ControlWindow(const TGWindow *p, int w, int h)
         0, 8255);
     group_general->AddFrame(channelEntry, new TGLayoutHints(kLHintsTop | kLHintsLeft,  1, 1, 1, 1));
 
-    TGGroupFrame *group[3];
+    badChanelButton = new TGCheckButton(group_general, "show bad channel  ");
+    badChanelButton->SetState(kButtonUp);
+    group_general->AddFrame(badChanelButton, new TGLayoutHints(kLHintsTop | kLHintsLeft,  1, 1, 1, 1));
 
+    TGGroupFrame *group[3];
     for (int i=0; i<3; i++) {
         group[i] = new TGGroupFrame(this, "", kHorizontalFrame);
         group[i]->SetTitlePos(TGGroupFrame::kLeft);

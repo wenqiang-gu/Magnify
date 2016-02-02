@@ -17,6 +17,7 @@
 #include "TH2F.h"
 #include "TH1F.h"
 #include "TBox.h"
+#include "TLine.h"
 #include "TColor.h"
 
 #include <iostream>
@@ -62,6 +63,7 @@ void GuiController::InitConnections()
     cw->zAxisRangeEntry[1]->Connect("ValueSet(Long_t)", "GuiController", this, "ZRangeChanged()");
 
     cw->channelEntry->Connect("ValueSet(Long_t)", "GuiController", this, "ChannelChanged()");
+    cw->badChanelButton->Connect("Clicked()", "GuiController", this, "UpdateShowBadChannel()");
 
     // stupid way to connect signal and slots
     vw->can->GetPad(1)->Connect("RangeChanged()", "GuiController", this, "SyncTimeAxis0()");
@@ -78,6 +80,27 @@ void GuiController::InitConnections()
         this,
         "ProcessCanvasEvent(Int_t,Int_t,Int_t,TObject*)"
     );
+}
+
+void GuiController::UpdateShowBadChannel()
+{
+    if (cw->badChanelButton->IsDown()) {
+        for (int ind=0; ind<6; ind++) {
+            vw->can->cd(ind+1);
+            data->wfs.at(ind)->DrawLines();
+            vw->can->GetPad(ind+1)->Modified();
+            vw->can->GetPad(ind+1)->Update();
+        }
+    }
+    else {
+        for (int ind=0; ind<6; ind++) {
+            vw->can->cd(ind+1);
+            data->wfs.at(ind)->HideLines();
+            vw->can->GetPad(ind+1)->Modified();
+            vw->can->GetPad(ind+1)->Update();
+        }
+    }
+
 }
 
 void GuiController::ThresholdChanged(int i)
@@ -146,7 +169,10 @@ void GuiController::ChannelChanged()
 void GuiController::ProcessCanvasEvent(Int_t ev, Int_t x, Int_t y, TObject *selected)
 {
     if (ev == 11) { // clicked
-        if (!(selected->IsA() == TH2F::Class() || selected->IsA() == TBox::Class())) return;
+        if (!(selected->IsA() == TH2F::Class()
+            || selected->IsA() == TBox::Class()
+            || selected->IsA() == TLine::Class()
+        )) return;
         TVirtualPad* pad = vw->can->GetClickSelectedPad();
         int padNo = pad->GetNumber();
         double xx = pad->AbsPixeltoX(x);

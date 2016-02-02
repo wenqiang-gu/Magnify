@@ -3,13 +3,8 @@
 
 #include "TGFrame.h"
 
-class TGTextButton;
 class TGNumberEntry;
-class TGButtonGroup;
-class TGRadioButton;
-class TGListBox;
 class TGCheckButton;
-class TGLabel;
 
 class ControlWindow: public TGHorizontalFrame
 {
@@ -20,6 +15,8 @@ public:
     TGNumberEntry *channelEntry;
     TGNumberEntry *threshEntry[3];
     TGNumberEntry *zAxisRangeEntry[2];
+    TGCheckButton *badChanelButton;
+
 
     ClassDef(ControlWindow, 0)
 };

@@ -3,10 +3,12 @@
 
 #include "TH2F.h"
 #include "TFile.h"
+#include "TTree.h"
 
 #include <vector>
 #include <string>
 #include <stdexcept>
+#include <iostream>
 
 using namespace std;
 
@@ -23,6 +25,8 @@ Data::Data(const char* filename)
     	throw runtime_error(msg.c_str());
     }
 
+    load_badchannels();
+
     load_waveform("hu_raw", "U Plane (Raw)");
     load_waveform("hv_raw", "V Plane (Raw)");
     load_waveform("hw_raw", "W Plane (Raw)");
@@ -30,6 +34,22 @@ Data::Data(const char* filename)
     load_waveform("hu_decon", "U Plane (Deconvoluted)", 1./500);
     load_waveform("hv_decon", "V Plane (Deconvoluted)", 1./500);
     load_waveform("hw_decon", "W Plane (Deconvoluted)", 1./500);
+
+}
+
+void Data::load_badchannels()
+{
+    TTree *t = (TTree*)rootFile->Get("T_bad");
+    if (t) {
+        int chid;
+        t->SetBranchAddress("chid", &chid);
+        int nEntries = t->GetEntries();
+        for (int i=0; i<nEntries; i++) {
+            t->GetEntry(i);
+            bad_channels.push_back(chid);
+            // cout << chid << endl;
+        }
+    }
 }
 
 void Data::load_waveform(const char* name, const char* title, double scale)
@@ -39,7 +59,7 @@ void Data::load_waveform(const char* name, const char* title, double scale)
     	string msg = "Failed to get waveform ";
     	msg += name;
     	throw runtime_error(msg.c_str());
-        }
+    }
     TH2F* hist = dynamic_cast<TH2F*>(obj);
     if (!hist) {
     	string msg = "Not a TH2F: ";
@@ -48,7 +68,7 @@ void Data::load_waveform(const char* name, const char* title, double scale)
     }
     hist->SetXTitle("channel");
     hist->SetYTitle("ticks");
-    wfs.push_back( new Waveforms(hist, name, title, scale) );
+    wfs.push_back( new Waveforms(hist, &bad_channels, name, title, scale) );
 }
 
 Data::~Data()

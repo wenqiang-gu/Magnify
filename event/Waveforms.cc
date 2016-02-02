@@ -3,6 +3,7 @@
 #include "TH2F.h"
 #include "TH1F.h"
 #include "TBox.h"
+#include "TLine.h"
 #include "TColor.h"
 #include "TDirectory.h"
 #include "TString.h"
@@ -17,10 +18,11 @@ using namespace std;
 Waveforms::Waveforms()
 {}
 
-Waveforms::Waveforms(TH2F *h, TString name, TString title, double scale)
+Waveforms::Waveforms(TH2F *h, vector<int>* v, TString name, TString title, double scale)
 {
     // 2D hist: x: channel id; y: tdc 0 - 9600 or 0 - 9600/4
     hOrig = h;
+    bad_channels = v;
     fScale = scale;
     nChannels = hOrig->GetNbinsX();
     nTDCs = hOrig->GetNbinsY();
@@ -38,16 +40,32 @@ Waveforms::Waveforms(TH2F *h, TString name, TString title, double scale)
     hDummy->SetXTitle("channel");
     hDummy->SetYTitle("ticks");
 
+    int size = bad_channels->size();
+    TLine *line = 0;
+    for (int i=0; i<size; i++) {
+        int channel = bad_channels->at(i);
+        if (channel>=firstChannel && channel<firstChannel+nChannels) {
+            line = new TLine(
+                channel,
+                hOrig->GetYaxis()->GetBinLowEdge(0),
+                channel,
+                hOrig->GetYaxis()->GetBinUpEdge(nTDCs)
+            );
+            line->SetLineColorAlpha(kGray, 0.5);
+            lines.push_back(line);
+        }
+    }
+
     SetZRange(10, 20);
     SetThreshold(10);
 }
 
 Waveforms::~Waveforms()
 {
-    ClearBoxes();
+    Clear();
 }
 
-void Waveforms::ClearBoxes()
+void Waveforms::Clear()
 {
     int size = boxes.size();
     // cout << "deleting " << size <<  " boxes ... " << flush;
@@ -60,6 +78,7 @@ void Waveforms::ClearBoxes()
     box_values.clear();
     // cout << " finished. " << endl;
 
+    // lines.clear();
 }
 
 void Waveforms::SetZRange(int min, int max)
@@ -70,7 +89,7 @@ void Waveforms::SetZRange(int min, int max)
 
 void Waveforms::SetThreshold(double x)
 {
-    ClearBoxes();
+    Clear();
     threshold = x;
     TBox *box = 0;
     cout << fName << ": creating boxes ... " << flush;
@@ -93,6 +112,22 @@ void Waveforms::SetThreshold(double x)
     cout << boxes.size() <<  " created. " << endl;
 }
 
+void Waveforms::DrawLines()
+{
+    // cout << lines.size() << " lines" << endl;
+    for (size_t i=0; i<lines.size(); i++) {
+        lines[i]->Draw();
+    }
+}
+
+void Waveforms::HideLines()
+{
+    // cout << lines.size() << " lines" << endl;
+    for (size_t i=0; i<lines.size(); i++) {
+        gPad->GetListOfPrimitives()->Remove(lines[i]);
+    }
+}
+
 void Waveforms::Draw2D()
 {
     hDummy->SetBinContent(1, 1);
@@ -100,6 +135,7 @@ void Waveforms::Draw2D()
     // hDummy->GetZaxis()->SetRangeUser(-1, 30);
     hDummy->GetZaxis()->SetRangeUser(zmin, zmax);
     gPad->Update();
+
     TPaletteAxis *palette = (TPaletteAxis*)hDummy->GetListOfFunctions()->FindObject("palette");
     int size = boxes.size();
     for (int i=0; i<size; i++) {
