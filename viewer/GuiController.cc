@@ -63,6 +63,14 @@ void GuiController::InitConnections()
 
     cw->channelEntry->Connect("ValueSet(Long_t)", "GuiController", this, "ChannelChanged()");
 
+    // stupid way to connect signal and slots
+    vw->can->GetPad(1)->Connect("RangeChanged()", "GuiController", this, "SyncTimeAxis0()");
+    vw->can->GetPad(2)->Connect("RangeChanged()", "GuiController", this, "SyncTimeAxis1()");
+    vw->can->GetPad(3)->Connect("RangeChanged()", "GuiController", this, "SyncTimeAxis2()");
+    vw->can->GetPad(4)->Connect("RangeChanged()", "GuiController", this, "SyncTimeAxis3()");
+    vw->can->GetPad(5)->Connect("RangeChanged()", "GuiController", this, "SyncTimeAxis4()");
+    vw->can->GetPad(6)->Connect("RangeChanged()", "GuiController", this, "SyncTimeAxis5()");
+
 
     vw->can->Connect(
         "ProcessedEvent(Int_t,Int_t,Int_t,TObject*)",
@@ -97,6 +105,23 @@ void GuiController::ZRangeChanged()
         vw->can->GetPad(ind+1)->Update();
     }
 
+}
+
+void GuiController::SyncTimeAxis(int i)
+{
+    double min = data->wfs.at(i)->hDummy->GetYaxis()->GetFirst();
+    double max = data->wfs.at(i)->hDummy->GetYaxis()->GetLast();
+    // double min = vw->can->GetPad(i+1)->GetUymin();
+    // double max = vw->can->GetPad(i+1)->GetUymax();
+
+    for (int ind=0; ind<6; ind++) {
+        if (i==ind) continue;
+        data->wfs.at(ind)->hDummy->GetYaxis()->SetRange(min, max);
+        vw->can->GetPad(ind+1)->Modified();
+        vw->can->GetPad(ind+1)->Update();
+    }
+
+    // cout << "range changed: " << min << ", " << max << endl;
 }
 
 void GuiController::ChannelChanged()

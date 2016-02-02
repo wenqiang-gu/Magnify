@@ -8,6 +8,8 @@
 #include "TCanvas.h"
 #include "TH1F.h"
 #include "TColor.h"
+#include "TBox.h"
+#include "TFrame.h"
 
 #include <iostream>
 using namespace std;
@@ -39,6 +41,7 @@ void ViewWindow::SetTheme(int theme)
         can->cd(i);
         SetPalette(theme);
         // gPad->SetFillColor(kWhite);
+        // can->GetPad(i)->GetFrame()->SetBit(TBox::kCannotMove);
     }
 }
 

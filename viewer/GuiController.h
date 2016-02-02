@@ -27,6 +27,14 @@ public:
     void ZRangeChanged();
     void ChannelChanged();
 
+    void SyncTimeAxis0() { SyncTimeAxis(0); }
+    void SyncTimeAxis1() { SyncTimeAxis(1); }
+    void SyncTimeAxis2() { SyncTimeAxis(2); }
+    void SyncTimeAxis3() { SyncTimeAxis(3); }
+    void SyncTimeAxis4() { SyncTimeAxis(4); }
+    void SyncTimeAxis5() { SyncTimeAxis(5); }
+    void SyncTimeAxis(int i);
+
     MainWindow *mw;
     ViewWindow *vw;
     ControlWindow *cw;
