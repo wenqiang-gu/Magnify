@@ -36,3 +36,4 @@ test.*
 subl/
 test/
 old/
+*.pcm

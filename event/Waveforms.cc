@@ -34,6 +34,8 @@ Waveforms::Waveforms(TH2F *h, TString name, TString title, double scale)
         DUMMY_NBINS, hOrig->GetXaxis()->GetBinLowEdge(0), hOrig->GetXaxis()->GetBinUpEdge(nChannels),
         DUMMY_NBINS, hOrig->GetYaxis()->GetBinLowEdge(0), hOrig->GetYaxis()->GetBinUpEdge(nTDCs)
     );
+    hDummy->SetXTitle("channel");
+    hDummy->SetYTitle("ticks");
 
     SetZRange(10, 20);
     SetThreshold(10);

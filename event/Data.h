@@ -17,6 +17,8 @@ public:
     TFile *rootFile;
     vector<Waveforms*> wfs;
 
+private:
+    void load_waveform(const char* name, const char* title="", double scale=1);
 };
 
 #endif
