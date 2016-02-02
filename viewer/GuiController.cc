@@ -30,7 +30,8 @@ GuiController::GuiController(const TGWindow *p, int w, int h, const char* filena
     vw = mw->fViewWindow;
     cw = mw->fControlWindow;
 
-    data = new Data("../data/2D_display_3455_0_0.root");
+    // data = new Data("../data/2D_display_3455_0_0.root");
+    data = new Data(filename);
     for (int i=0; i<6; i++) {
         vw->can->cd(i+1);
         data->wfs.at(i)->Draw2D();

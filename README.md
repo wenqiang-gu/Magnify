@@ -1,4 +1,4 @@
-# Magnifgy
+# Magnify
 
 ## A ROOT-based GUI to look at raw and deconvoluted waveforms
 
@@ -6,5 +6,5 @@
 
 ```
 cd scripts/
-root -l run.C
+root -l 'Magnify.C("path/to/rootfile")'
 ```
