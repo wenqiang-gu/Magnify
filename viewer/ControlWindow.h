@@ -4,7 +4,7 @@
 #include "TGFrame.h"
 
 class TGTextButton;
-class TGNumberEntryField;
+class TGNumberEntry;
 class TGButtonGroup;
 class TGRadioButton;
 class TGListBox;
@@ -17,10 +17,8 @@ public:
     ControlWindow(const TGWindow *p, int w, int h);
     virtual ~ControlWindow();
 
-    TGGroupFrame       *fZoomControlFrame;
-    TGHorizontalFrame  *fZoomButtonFrame;
-    TGTextButton       *autoZoomButton;
-    TGTextButton       *unZoomButton;
+    TGNumberEntry *threshEntry[3];
+    TGNumberEntry *zAxisRangeEntry[2];
 
     ClassDef(ControlWindow, 0)
 };

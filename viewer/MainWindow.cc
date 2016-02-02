@@ -40,8 +40,8 @@ void MainWindow::InitMenu()
     fMenuBarItemLayout = new TGLayoutHints(kLHintsTop | kLHintsLeft, 0, 4, 0, 0);
 
     fMenuFile = new TGPopupMenu(gClient->GetRoot());
-    fMenuFile->AddEntry("&Open...", M_FILE_OPEN);
-    fMenuFile->AddSeparator();
+    // fMenuFile->AddEntry("&Open...", M_FILE_OPEN);
+    // fMenuFile->AddSeparator();
     fMenuFile->AddEntry(new TGHotString("E&xit"), M_FILE_EXIT);
 
     fMenuBar->AddPopup(new TGHotString("&File"), fMenuFile, fMenuBarItemLayout);
