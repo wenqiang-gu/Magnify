@@ -61,6 +61,7 @@ void GuiController::InitConnections()
     cw->zAxisRangeEntry[0]->Connect("ValueSet(Long_t)", "GuiController", this, "ZRangeChanged()");
     cw->zAxisRangeEntry[1]->Connect("ValueSet(Long_t)", "GuiController", this, "ZRangeChanged()");
 
+    cw->channelEntry->Connect("ValueSet(Long_t)", "GuiController", this, "ChannelChanged()");
 
 
     vw->can->Connect(
@@ -96,6 +97,25 @@ void GuiController::ZRangeChanged()
         vw->can->GetPad(ind+1)->Update();
     }
 
+}
+
+void GuiController::ChannelChanged()
+{
+    int channel = cw->channelEntry->GetNumber();
+    cout << "channel: " << channel << endl;
+    int wfsNo = 0;
+    if (channel>=data->wfs.at(1)->firstChannel && channel<data->wfs.at(2)->firstChannel) wfsNo = 1;
+    else if (channel>=data->wfs.at(2)->firstChannel) wfsNo = 2;
+
+    int padNo = wfsNo+7;
+    vw->can->cd(padNo);
+
+    data->wfs.at(wfsNo)->Draw1D(channel);
+    TH1F *h = data->wfs.at(wfsNo+3)->Draw1D(channel, "same" ); // draw calib
+    h->SetLineColor(kRed);
+
+    vw->can->GetPad(padNo)->Modified();
+    vw->can->GetPad(padNo)->Update();
 }
 
 void GuiController::ProcessCanvasEvent(Int_t ev, Int_t x, Int_t y, TObject *selected)

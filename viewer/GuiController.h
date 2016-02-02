@@ -25,6 +25,7 @@ public:
     void ThresholdWChanged() { ThresholdChanged(2); }
     void ThresholdChanged(int i);
     void ZRangeChanged();
+    void ChannelChanged();
 
     MainWindow *mw;
     ViewWindow *vw;

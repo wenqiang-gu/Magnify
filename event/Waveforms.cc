@@ -24,6 +24,7 @@ Waveforms::Waveforms(TH2F *h, TString name, TString title, double scale)
     fScale = scale;
     nChannels = hOrig->GetNbinsX();
     nTDCs = hOrig->GetNbinsY();
+    firstChannel = hOrig->GetXaxis()->GetBinCenter(1);
     fName = (name == "" ? hOrig->GetName() : name.Data());
     fTitle = (title == "" ? hOrig->GetTitle() : title.Data());
 

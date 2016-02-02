@@ -27,6 +27,7 @@ public:
 
     int nChannels;  // nBinsX
     int nTDCs;       // nBinsY
+    int firstChannel;
     double fScale;    // electron to
     TString fName;
     TString fTitle;

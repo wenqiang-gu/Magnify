@@ -17,15 +17,13 @@ ControlWindow::ControlWindow(const TGWindow *p, int w, int h)
     group_general->SetTitlePos(TGGroupFrame::kLeft);
     AddFrame(group_general, new TGLayoutHints(kLHintsTop | kLHintsLeft, 2, 2, 1, 1));
 
-    group_general->AddFrame(new TGLabel(group_general, "color scale: "), new TGLayoutHints(kLHintsTop | kLHintsLeft,  2, 2, 1, 1));
-    for (int i=0; i<2; i++) {
-        zAxisRangeEntry[i] = new TGNumberEntry(group_general, 10, 5, -1,
-            TGNumberFormat::kNESInteger,
-            TGNumberFormat::kNEAAnyNumber,
-            TGNumberFormat::kNELLimitMinMax,
-            -100, 100);
-        group_general->AddFrame(zAxisRangeEntry[i], new TGLayoutHints(kLHintsTop | kLHintsLeft,  1, 1, 1, 1));
-    }
+    group_general->AddFrame(new TGLabel(group_general, "channel: "), new TGLayoutHints(kLHintsTop | kLHintsLeft,  2, 2, 1, 1));
+    channelEntry = new TGNumberEntry(group_general, 0, 5, -1,
+        TGNumberFormat::kNESInteger,
+        TGNumberFormat::kNEANonNegative,
+        TGNumberFormat::kNELLimitMinMax,
+        0, 8255);
+    group_general->AddFrame(channelEntry, new TGLayoutHints(kLHintsTop | kLHintsLeft,  1, 1, 1, 1));
 
     TGGroupFrame *group[3];
 
@@ -46,7 +44,19 @@ ControlWindow::ControlWindow(const TGWindow *p, int w, int h)
     group[1]->SetTitle("V Plane");
     group[2]->SetTitle("W Plane");
 
+    TGGroupFrame *group_misc = new TGGroupFrame(this, "Misc", kHorizontalFrame);
+    group_misc->SetTitlePos(TGGroupFrame::kLeft);
+    AddFrame(group_misc, new TGLayoutHints(kLHintsTop | kLHintsLeft, 2, 2, 1, 1));
 
+    group_misc->AddFrame(new TGLabel(group_misc, "color range: "), new TGLayoutHints(kLHintsTop | kLHintsLeft,  2, 2, 1, 1));
+    for (int i=0; i<2; i++) {
+        zAxisRangeEntry[i] = new TGNumberEntry(group_misc, 10, 5, -1,
+            TGNumberFormat::kNESInteger,
+            TGNumberFormat::kNEAAnyNumber,
+            TGNumberFormat::kNELLimitMinMax,
+            -100, 100);
+        group_misc->AddFrame(zAxisRangeEntry[i], new TGLayoutHints(kLHintsTop | kLHintsLeft,  1, 1, 1, 1));
+    }
 
 
 }

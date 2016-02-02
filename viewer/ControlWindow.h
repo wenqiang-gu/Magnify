@@ -17,6 +17,7 @@ public:
     ControlWindow(const TGWindow *p, int w, int h);
     virtual ~ControlWindow();
 
+    TGNumberEntry *channelEntry;
     TGNumberEntry *threshEntry[3];
     TGNumberEntry *zAxisRangeEntry[2];
 
