@@ -1,7 +1,10 @@
 #include "Data.h"
 #include "Waveforms.h"
+#include "RawWaveforms.h"
 
 #include "TH2F.h"
+#include "TH2I.h"
+#include "TH1I.h"
 #include "TFile.h"
 #include "TTree.h"
 
@@ -27,13 +30,17 @@ Data::Data(const char* filename)
 
     load_badchannels();
 
-    load_waveform("hu_raw", "U Plane (Raw)");
-    load_waveform("hv_raw", "V Plane (Raw)");
-    load_waveform("hw_raw", "W Plane (Raw)");
+    load_waveform("hu_raw", "U Plane (Denoised)");
+    load_waveform("hv_raw", "V Plane (Denoised)");
+    load_waveform("hw_raw", "W Plane (Denoised)");
 
     load_waveform("hu_decon", "U Plane (Deconvoluted)", 1./500);
     load_waveform("hv_decon", "V Plane (Deconvoluted)", 1./500);
     load_waveform("hw_decon", "W Plane (Deconvoluted)", 1./500);
+
+    raw_wfs.push_back( new RawWaveforms((TH2I*)rootFile->Get("hu_orig"), (TH1I*)rootFile->Get("hu_baseline")) );
+    raw_wfs.push_back( new RawWaveforms((TH2I*)rootFile->Get("hv_orig"), (TH1I*)rootFile->Get("hv_baseline")) );
+    raw_wfs.push_back( new RawWaveforms((TH2I*)rootFile->Get("hw_orig"), (TH1I*)rootFile->Get("hw_baseline")) );
 
 }
 
@@ -70,6 +77,7 @@ void Data::load_waveform(const char* name, const char* title, double scale)
     hist->SetYTitle("ticks");
     wfs.push_back( new Waveforms(hist, &bad_channels, name, title, scale) );
 }
+
 
 Data::~Data()
 {

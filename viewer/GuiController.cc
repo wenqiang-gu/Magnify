@@ -4,6 +4,7 @@
 #include "ControlWindow.h"
 #include "Data.h"
 #include "Waveforms.h"
+#include "RawWaveforms.h"
 
 #include "TApplication.h"
 #include "TSystem.h"
@@ -16,6 +17,8 @@
 #include "TCanvas.h"
 #include "TH2F.h"
 #include "TH1F.h"
+#include "TH2I.h"
+#include "TH1I.h"
 #include "TBox.h"
 #include "TLine.h"
 #include "TColor.h"
@@ -36,6 +39,13 @@ GuiController::GuiController(const TGWindow *p, int w, int h, const char* filena
     for (int i=0; i<6; i++) {
         vw->can->cd(i+1);
         data->wfs.at(i)->Draw2D();
+    }
+    for (int i=0; i<3; i++) {
+        vw->can->cd(i+7);
+        int chanNo = data->wfs.at(i)->firstChannel;
+        data->wfs.at(i)->Draw1D(chanNo);
+        TH1F *h = data->wfs.at(i+3)->Draw1D(chanNo, "same"); // draw calib
+        h->SetLineColor(kRed);
     }
 
     InitConnections();
@@ -62,8 +72,12 @@ void GuiController::InitConnections()
     cw->zAxisRangeEntry[0]->Connect("ValueSet(Long_t)", "GuiController", this, "ZRangeChanged()");
     cw->zAxisRangeEntry[1]->Connect("ValueSet(Long_t)", "GuiController", this, "ZRangeChanged()");
 
+    cw->timeRangeEntry[0]->SetNumber(0);
+    cw->timeRangeEntry[1]->SetNumber(data->wfs.at(0)->nTDCs);
+
     cw->channelEntry->Connect("ValueSet(Long_t)", "GuiController", this, "ChannelChanged()");
     cw->badChanelButton->Connect("Clicked()", "GuiController", this, "UpdateShowBadChannel()");
+    cw->rawWfButton->Connect("Clicked()", "GuiController", this, "UpdateShowRaw()");
 
     // stupid way to connect signal and slots
     vw->can->GetPad(1)->Connect("RangeChanged()", "GuiController", this, "SyncTimeAxis0()");
@@ -147,6 +161,31 @@ void GuiController::SyncTimeAxis(int i)
     // cout << "range changed: " << min << ", " << max << endl;
 }
 
+void GuiController::UpdateShowRaw()
+{
+    int channel = cw->channelEntry->GetNumber();
+    cout << "channel: " << channel << endl;
+    int wfsNo = 0;
+    if (channel>=data->wfs.at(1)->firstChannel && channel<data->wfs.at(2)->firstChannel) wfsNo = 1;
+    else if (channel>=data->wfs.at(2)->firstChannel) wfsNo = 2;
+
+    int padNo = wfsNo+7;
+    vw->can->cd(padNo);
+
+    TH1I *hh = data->raw_wfs.at(wfsNo)->Draw1D(channel, "same");
+    if (cw->rawWfButton->IsDown()) {
+        hh->SetLineColor(kBlue);
+        // hMain->SetTitle( TString::Format("%s, %s", hMain->GetTitle(), hh->GetTitle()) );
+    }
+    else {
+        gPad->GetListOfPrimitives()->Remove(hh);
+        // hMain->SetTitle( TString::Format("%s, %s", hMain->GetTitle(), hh->GetTitle()) );
+    }
+
+    vw->can->GetPad(padNo)->Modified();
+    vw->can->GetPad(padNo)->Update();
+}
+
 void GuiController::ChannelChanged()
 {
     int channel = cw->channelEntry->GetNumber();
@@ -158,9 +197,18 @@ void GuiController::ChannelChanged()
     int padNo = wfsNo+7;
     vw->can->cd(padNo);
 
-    data->wfs.at(wfsNo)->Draw1D(channel);
+    TH1F *hMain = data->wfs.at(wfsNo)->Draw1D(channel);
+    hMain->SetLineColor(kBlack);
+    hMain->GetXaxis()->SetRangeUser(cw->timeRangeEntry[0]->GetNumber(), cw->timeRangeEntry[1]->GetNumber());
+
     TH1F *h = data->wfs.at(wfsNo+3)->Draw1D(channel, "same" ); // draw calib
     h->SetLineColor(kRed);
+
+    if (cw->rawWfButton->IsDown()) {
+        TH1I *hh = data->raw_wfs.at(wfsNo)->Draw1D(channel, "same"); // draw calib
+        hh->SetLineColor(kBlue);
+        hMain->SetTitle( TString::Format("%s, %s", hMain->GetTitle(), hh->GetTitle()) );
+    }
 
     vw->can->GetPad(padNo)->Modified();
     vw->can->GetPad(padNo)->Update();
@@ -186,8 +234,13 @@ void GuiController::ProcessCanvasEvent(Int_t ev, Int_t x, Int_t y, TObject *sele
             wfNo = wfNo < 3 ? wfNo : wfNo-3;  // draw raw first
             int chanNo = TMath::Nint(xx); // round
             data->wfs.at(wfNo)->Draw1D(chanNo);
-            TH1F *h = data->wfs.at(wfNo+3)->Draw1D(chanNo, "same" ); // draw calib
+            TH1F *h = data->wfs.at(wfNo+3)->Draw1D(chanNo, "same"); // draw calib
             h->SetLineColor(kRed);
+            // TH1I *hh = data->raw_wfs.at(wfNo)->Draw1D(chanNo, "same"); // draw calib
+            // hh->SetLineColor(kBlue);
+            cw->channelEntry->SetNumber(chanNo);
+            cw->timeRangeEntry[0]->SetNumber(0);
+            cw->timeRangeEntry[1]->SetNumber(data->wfs.at(0)->nTDCs);
         }
         vw->can->GetPad(drawPad)->Modified();
         vw->can->GetPad(drawPad)->Update();

@@ -25,6 +25,10 @@ ControlWindow::ControlWindow(const TGWindow *p, int w, int h)
         0, 8255);
     group_general->AddFrame(channelEntry, new TGLayoutHints(kLHintsTop | kLHintsLeft,  1, 1, 1, 1));
 
+    rawWfButton = new TGCheckButton(group_general, "show raw waveform  ");
+    rawWfButton->SetState(kButtonUp);
+    group_general->AddFrame(rawWfButton, new TGLayoutHints(kLHintsTop | kLHintsLeft,  1, 1, 1, 1));
+
     badChanelButton = new TGCheckButton(group_general, "show bad channel  ");
     badChanelButton->SetState(kButtonUp);
     group_general->AddFrame(badChanelButton, new TGLayoutHints(kLHintsTop | kLHintsLeft,  1, 1, 1, 1));
@@ -51,6 +55,16 @@ ControlWindow::ControlWindow(const TGWindow *p, int w, int h)
     group_misc->SetTitlePos(TGGroupFrame::kLeft);
     AddFrame(group_misc, new TGLayoutHints(kLHintsTop | kLHintsLeft, 2, 2, 1, 1));
 
+    group_misc->AddFrame(new TGLabel(group_misc, "time range: "), new TGLayoutHints(kLHintsTop | kLHintsLeft,  2, 2, 1, 1));
+    for (int i=0; i<2; i++) {
+        timeRangeEntry[i] = new TGNumberEntry(group_misc, 0, 5, -1,
+            TGNumberFormat::kNESInteger,
+            TGNumberFormat::kNEAAnyNumber,
+            TGNumberFormat::kNELLimitMinMax,
+            0, 10000);
+        group_misc->AddFrame(timeRangeEntry[i], new TGLayoutHints(kLHintsTop | kLHintsLeft,  1, 1, 1, 1));
+    }
+
     group_misc->AddFrame(new TGLabel(group_misc, "color range: "), new TGLayoutHints(kLHintsTop | kLHintsLeft,  2, 2, 1, 1));
     for (int i=0; i<2; i++) {
         zAxisRangeEntry[i] = new TGNumberEntry(group_misc, 10, 5, -1,
@@ -60,6 +74,9 @@ ControlWindow::ControlWindow(const TGWindow *p, int w, int h)
             -100, 100);
         group_misc->AddFrame(zAxisRangeEntry[i], new TGLayoutHints(kLHintsTop | kLHintsLeft,  1, 1, 1, 1));
     }
+
+
+
 
 
 }

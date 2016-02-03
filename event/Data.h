@@ -4,6 +4,7 @@
 class TH2F;
 class TFile;
 class Waveforms;
+class RawWaveforms;
 
 #include <vector>
 
@@ -17,6 +18,7 @@ public:
     TFile *rootFile;
     vector<Waveforms*> wfs;
     vector<int> bad_channels;
+    vector<RawWaveforms*> raw_wfs;
 
 private:
     void load_waveform(const char* name, const char* title="", double scale=1);

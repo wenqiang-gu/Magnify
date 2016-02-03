@@ -147,7 +147,7 @@ void Waveforms::Draw2D()
 TH1F* Waveforms::Draw1D(int chanNo, const char* options)
 {
     TString name = TString::Format("hWire_%s", fName.Data());
-    TString title = TString::Format("Channle %i", chanNo);
+    TString title = TString::Format("Channel %i", chanNo);
 
     TH1F *hWire = (TH1F*)gDirectory->FindObject(name);
     if (hWire) delete hWire;
@@ -162,6 +162,7 @@ TH1F* Waveforms::Draw1D(int chanNo, const char* options)
         hWire->SetBinContent(i, hOrig->GetBinContent(binNo, i)*fScale);
     }
     hWire->Draw(options);
+    hWire->GetXaxis()->SetTitle("ticks");
 
     return hWire;
 }

@@ -27,6 +27,7 @@ public:
     void ZRangeChanged();
     void ChannelChanged();
     void UpdateShowBadChannel();
+    void UpdateShowRaw();
 
     void SyncTimeAxis0() { SyncTimeAxis(0); }
     void SyncTimeAxis1() { SyncTimeAxis(1); }
