@@ -19,4 +19,4 @@ root -l loadClasses.C Magnify.C
 
 ### Screenshot
 
-![screenshot](data/screeshot.png?raw=true "Screenshot")
+![screenshot](data/screenshot.png?raw=true "Screenshot")
