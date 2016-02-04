@@ -11,6 +11,7 @@
 #include "TExec.h"
 #include "TROOT.h"
 #include "TMath.h"
+#include "TGFileDialog.h"
 
 #include "TGMenu.h"
 #include "TGNumberEntry.h"
@@ -28,14 +29,21 @@
 using namespace std;
 
 
-GuiController::GuiController(const TGWindow *p, int w, int h, const char* filename)
+GuiController::GuiController(const TGWindow *p, int w, int h, const char* fn)
 {
     mw = new MainWindow(p, w, h);
     vw = mw->fViewWindow;
     cw = mw->fControlWindow;
 
     // data = new Data("../data/2D_display_3455_0_0.root");
-    data = new Data(filename);
+    TString filename;
+    if (!fn) {
+        filename = OpenDialog();
+    }
+    else {
+        filename = fn;
+    }
+    data = new Data(filename.Data());
     for (int i=0; i<6; i++) {
         vw->can->cd(i+1);
         data->wfs.at(i)->Draw2D();
@@ -46,6 +54,9 @@ GuiController::GuiController(const TGWindow *p, int w, int h, const char* filena
         data->wfs.at(i)->Draw1D(chanNo);
         TH1F *h = data->wfs.at(i+3)->Draw1D(chanNo, "same"); // draw calib
         h->SetLineColor(kRed);
+        hCurrent[i] = h;
+        // cw->channelEntry->SetNumber(chanNo);
+        // ChannelChanged();
     }
 
     InitConnections();
@@ -78,6 +89,7 @@ void GuiController::InitConnections()
     cw->channelEntry->Connect("ValueSet(Long_t)", "GuiController", this, "ChannelChanged()");
     cw->badChanelButton->Connect("Clicked()", "GuiController", this, "UpdateShowBadChannel()");
     cw->rawWfButton->Connect("Clicked()", "GuiController", this, "UpdateShowRaw()");
+    cw->unZoomButton->Connect("Clicked()", "GuiController", this, "UnZoom()");
 
     // stupid way to connect signal and slots
     vw->can->GetPad(1)->Connect("RangeChanged()", "GuiController", this, "SyncTimeAxis0()");
@@ -86,6 +98,9 @@ void GuiController::InitConnections()
     vw->can->GetPad(4)->Connect("RangeChanged()", "GuiController", this, "SyncTimeAxis3()");
     vw->can->GetPad(5)->Connect("RangeChanged()", "GuiController", this, "SyncTimeAxis4()");
     vw->can->GetPad(6)->Connect("RangeChanged()", "GuiController", this, "SyncTimeAxis5()");
+    // vw->can->GetPad(7)->Connect("RangeChanged()", "GuiController", this, "WfRangeChanged0()");
+    // vw->can->GetPad(8)->Connect("RangeChanged()", "GuiController", this, "WfRangeChanged1()");
+    // vw->can->GetPad(9)->Connect("RangeChanged()", "GuiController", this, "WfRangeChanged2()");
 
 
     vw->can->Connect(
@@ -130,6 +145,21 @@ void GuiController::ThresholdChanged(int i)
     }
 }
 
+void GuiController::UnZoom()
+{
+    cw->timeRangeEntry[0]->SetNumber(0);
+    cw->timeRangeEntry[1]->SetNumber(data->wfs.at(0)->nTDCs);
+    cw->adcRangeEntry[0]->SetNumber(0);
+    cw->adcRangeEntry[1]->SetNumber(0);
+
+    for (int ind=0; ind<6; ind++) {
+        data->wfs.at(ind)->hDummy->GetXaxis()->UnZoom();
+        data->wfs.at(ind)->hDummy->GetYaxis()->UnZoom();
+        vw->can->GetPad(ind+1)->Modified();
+        vw->can->GetPad(ind+1)->Update();
+    }
+}
+
 void GuiController::ZRangeChanged()
 {
     int min = cw->zAxisRangeEntry[0]->GetNumber();
@@ -159,6 +189,12 @@ void GuiController::SyncTimeAxis(int i)
     }
 
     // cout << "range changed: " << min << ", " << max << endl;
+}
+
+void GuiController::WfRangeChanged(int i)
+{
+    // can't figureout how to get the axis range in user coordinate ...
+    // ( not pad->GetUxmin() etc, nor axis->GetFirst() etc. )
 }
 
 void GuiController::UpdateShowRaw()
@@ -198,8 +234,14 @@ void GuiController::ChannelChanged()
     vw->can->cd(padNo);
 
     TH1F *hMain = data->wfs.at(wfsNo)->Draw1D(channel);
+    hCurrent[wfsNo] = hMain;
     hMain->SetLineColor(kBlack);
     hMain->GetXaxis()->SetRangeUser(cw->timeRangeEntry[0]->GetNumber(), cw->timeRangeEntry[1]->GetNumber());
+    int adc_min = cw->adcRangeEntry[0]->GetNumber();
+    int adc_max = cw->adcRangeEntry[1]->GetNumber();
+    if (adc_max > adc_min) {
+        hMain->GetYaxis()->SetRangeUser(adc_min, adc_max);
+    }
 
     TH1F *h = data->wfs.at(wfsNo+3)->Draw1D(channel, "same" ); // draw calib
     h->SetLineColor(kRed);
@@ -210,6 +252,8 @@ void GuiController::ChannelChanged()
         hMain->SetTitle( TString::Format("%s, %s", hMain->GetTitle(), hh->GetTitle()) );
     }
 
+    vw->can->GetPad(padNo)->SetGridx();
+    vw->can->GetPad(padNo)->SetGridy();
     vw->can->GetPad(padNo)->Modified();
     vw->can->GetPad(padNo)->Update();
 }
@@ -233,17 +277,18 @@ void GuiController::ProcessCanvasEvent(Int_t ev, Int_t x, Int_t y, TObject *sele
             int wfNo = padNo - 1;
             wfNo = wfNo < 3 ? wfNo : wfNo-3;  // draw raw first
             int chanNo = TMath::Nint(xx); // round
-            data->wfs.at(wfNo)->Draw1D(chanNo);
-            TH1F *h = data->wfs.at(wfNo+3)->Draw1D(chanNo, "same"); // draw calib
-            h->SetLineColor(kRed);
+            // data->wfs.at(wfNo)->Draw1D(chanNo);
+            // TH1F *h = data->wfs.at(wfNo+3)->Draw1D(chanNo, "same"); // draw calib
+            // h->SetLineColor(kRed);
             // TH1I *hh = data->raw_wfs.at(wfNo)->Draw1D(chanNo, "same"); // draw calib
             // hh->SetLineColor(kBlue);
             cw->channelEntry->SetNumber(chanNo);
-            cw->timeRangeEntry[0]->SetNumber(0);
-            cw->timeRangeEntry[1]->SetNumber(data->wfs.at(0)->nTDCs);
+            ChannelChanged();
+            // cw->timeRangeEntry[0]->SetNumber(0);
+            // cw->timeRangeEntry[1]->SetNumber(data->wfs.at(0)->nTDCs);
         }
-        vw->can->GetPad(drawPad)->Modified();
-        vw->can->GetPad(drawPad)->Update();
+        // vw->can->GetPad(drawPad)->Modified();
+        // vw->can->GetPad(drawPad)->Update();
     }
 
 }
@@ -256,4 +301,27 @@ void GuiController::HandleMenu(int id)
             gApplication->Terminate(0);
             break;
     }
+}
+
+TString GuiController::OpenDialog()
+{
+    const char *filetypes[] = {"ROOT files", "*.root", 0, 0};
+    TString currentDir(gSystem->WorkingDirectory());
+    static TString dir(".");
+    TGFileInfo fi;
+    fi.fFileTypes = filetypes;
+    fi.fIniDir    = StrDup(dir);
+    new TGFileDialog(gClient->GetRoot(), mw, kFDOpen, &fi);
+    dir = fi.fIniDir;
+    gSystem->cd(currentDir.Data());
+
+    if (fi.fFilename) {
+        // UnZoom();
+        cout << "open file: " << fi.fFilename << endl;
+        return fi.fFilename;
+    }
+    else {
+        gApplication->Terminate(0);
+    }
+
 }

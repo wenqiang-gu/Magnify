@@ -5,6 +5,7 @@
 
 class TGNumberEntry;
 class TGCheckButton;
+class TGTextButton;
 
 class ControlWindow: public TGHorizontalFrame
 {
@@ -16,9 +17,10 @@ public:
     TGNumberEntry *threshEntry[3];
     TGNumberEntry *zAxisRangeEntry[2];
     TGNumberEntry *timeRangeEntry[2];
+    TGNumberEntry *adcRangeEntry[2];
     TGCheckButton *badChanelButton;
     TGCheckButton *rawWfButton;
-
+    TGTextButton  *unZoomButton;
 
     ClassDef(ControlWindow, 0)
 };

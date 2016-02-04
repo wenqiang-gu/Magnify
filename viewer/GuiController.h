@@ -3,11 +3,13 @@
 
 #include "TGFrame.h"
 #include "RQ_OBJECT.h"
+#include "TString.h"
 
 class MainWindow;
 class ViewWindow;
 class ControlWindow;
 class Data;
+class TH1F;
 
 
 class GuiController
@@ -28,6 +30,7 @@ public:
     void ChannelChanged();
     void UpdateShowBadChannel();
     void UpdateShowRaw();
+    void UnZoom();
 
     void SyncTimeAxis0() { SyncTimeAxis(0); }
     void SyncTimeAxis1() { SyncTimeAxis(1); }
@@ -36,12 +39,18 @@ public:
     void SyncTimeAxis4() { SyncTimeAxis(4); }
     void SyncTimeAxis5() { SyncTimeAxis(5); }
     void SyncTimeAxis(int i);
+    void WfRangeChanged0() { WfRangeChanged(0); }
+    void WfRangeChanged1() { WfRangeChanged(1); }
+    void WfRangeChanged2() { WfRangeChanged(2); }
+    void WfRangeChanged(int i);
+
+    TString OpenDialog();
 
     MainWindow *mw;
     ViewWindow *vw;
     ControlWindow *cw;
     Data *data;
-
+    TH1F *hCurrent[3];
 };
 
 #endif

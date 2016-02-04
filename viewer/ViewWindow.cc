@@ -37,12 +37,13 @@ void ViewWindow::InitCanvas()
 
 void ViewWindow::SetTheme(int theme)
 {
-    for (int i=1; i<=6; i++) {
-        can->cd(i);
-        SetPalette(theme);
-        // gPad->SetFillColor(kWhite);
-        // can->GetPad(i)->GetFrame()->SetBit(TBox::kCannotMove);
-    }
+    // for (int i=1; i<=6; i++) {
+    //     can->cd(i);
+    //     SetPalette(theme);
+    //     // gPad->SetFillColor(kWhite);
+    //     // can->GetPad(i)->GetFrame()->SetBit(TBox::kCannotMove);
+    // }
+    SetPalette(theme);
 }
 
 void ViewWindow::SetStyle()

@@ -1,4 +1,4 @@
-void Magnify(const char* filename)
+void Magnify(const char* filename=0)
 {
     // gROOT->Reset();
     // gROOT->ProcessLine(".x loadClasses.C" );
