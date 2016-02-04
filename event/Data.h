@@ -19,10 +19,14 @@ public:
     vector<Waveforms*> wfs;
     vector<int> bad_channels;
     vector<RawWaveforms*> raw_wfs;
+    int runNo;
+    int subRunNo;
+    int eventNo;
 
 private:
     void load_waveform(const char* name, const char* title="", double scale=1);
     void load_badchannels();
+    void load_runinfo();
 };
 
 #endif

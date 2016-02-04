@@ -26,6 +26,7 @@
 
 #include <iostream>
 #include <vector>
+#include <algorithm>
 using namespace std;
 
 
@@ -44,6 +45,9 @@ GuiController::GuiController(const TGWindow *p, int w, int h, const char* fn)
         filename = fn;
     }
     data = new Data(filename.Data());
+    mw->SetWindowName(TString::Format("Magnify: run %i, sub-run %i, event %i",
+        data->runNo, data->subRunNo, data->eventNo));
+
     for (int i=0; i<6; i++) {
         vw->can->cd(i+1);
         data->wfs.at(i)->Draw2D();
@@ -241,6 +245,9 @@ void GuiController::ChannelChanged()
     int adc_max = cw->adcRangeEntry[1]->GetNumber();
     if (adc_max > adc_min) {
         hMain->GetYaxis()->SetRangeUser(adc_min, adc_max);
+    }
+    if (binary_search(data->bad_channels.begin(), data->bad_channels.end(), channel)) {
+        hMain->SetTitle( TString::Format("%s (bad channel)", hMain->GetTitle()) );
     }
 
     TH1F *h = data->wfs.at(wfsNo+3)->Draw1D(channel, "same" ); // draw calib

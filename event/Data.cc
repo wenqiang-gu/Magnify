@@ -29,6 +29,7 @@ Data::Data(const char* filename)
     }
 
     load_badchannels();
+    load_runinfo();
 
     load_waveform("hu_raw", "U Plane (Denoised)");
     load_waveform("hv_raw", "V Plane (Denoised)");
@@ -56,6 +57,17 @@ void Data::load_badchannels()
             bad_channels.push_back(chid);
             // cout << chid << endl;
         }
+    }
+}
+
+void Data::load_runinfo()
+{
+    TTree *t = (TTree*)rootFile->Get("Trun");
+    if (t) {
+        t->SetBranchAddress("runNo", &runNo);
+        t->SetBranchAddress("subRunNo", &subRunNo);
+        t->SetBranchAddress("eventNo", &eventNo);
+        t->GetEntry(0);
     }
 }
 
