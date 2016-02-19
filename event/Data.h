@@ -2,6 +2,7 @@
 #define DATA_H
 
 class TH2F;
+class TH1I;
 class TFile;
 class Waveforms;
 class RawWaveforms;
@@ -19,6 +20,7 @@ public:
     vector<Waveforms*> wfs;
     vector<int> bad_channels;
     vector<RawWaveforms*> raw_wfs;
+    vector<TH1I*> thresh_histos;
     int runNo;
     int subRunNo;
     int eventNo;

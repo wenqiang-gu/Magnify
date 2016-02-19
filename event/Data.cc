@@ -43,6 +43,10 @@ Data::Data(const char* filename)
     raw_wfs.push_back( new RawWaveforms((TH2I*)rootFile->Get("hv_orig"), (TH1I*)rootFile->Get("hv_baseline")) );
     raw_wfs.push_back( new RawWaveforms((TH2I*)rootFile->Get("hw_orig"), (TH1I*)rootFile->Get("hw_baseline")) );
 
+    thresh_histos.push_back( (TH1I*)rootFile->Get("hu_threshold") );
+    thresh_histos.push_back( (TH1I*)rootFile->Get("hv_threshold") );
+    thresh_histos.push_back( (TH1I*)rootFile->Get("hw_threshold") );
+
 }
 
 void Data::load_badchannels()
