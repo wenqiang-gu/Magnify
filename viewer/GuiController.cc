@@ -356,5 +356,6 @@ TString GuiController::OpenDialog()
     else {
         gApplication->Terminate(0);
     }
+    return "";
 
 }
