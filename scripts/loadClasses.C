@@ -10,6 +10,7 @@ void loadClasses()
     TString prefix;
     prefix = "../event";
     gROOT->ProcessLine( include + pwd + prefix );
+    gROOT->ProcessLine( load + prefix + "/BadChannels.cc+" );
     gROOT->ProcessLine( load + prefix + "/RawWaveforms.cc+" );
     gROOT->ProcessLine( load + prefix + "/Waveforms.cc+" );
     gROOT->ProcessLine( load + prefix + "/Data.cc+" );

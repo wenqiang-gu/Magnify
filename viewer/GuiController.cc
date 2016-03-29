@@ -5,6 +5,7 @@
 #include "Data.h"
 #include "Waveforms.h"
 #include "RawWaveforms.h"
+#include "BadChannels.h"
 
 #include "TApplication.h"
 #include "TSystem.h"
@@ -82,6 +83,7 @@ void GuiController::InitConnections()
     cw->threshEntry[1]->Connect("ValueSet(Long_t)", "GuiController", this, "ThresholdVChanged()");
     cw->threshEntry[2]->Connect("ValueSet(Long_t)", "GuiController", this, "ThresholdWChanged()");
     cw->setThreshButton->Connect("Clicked()", "GuiController", this, "SetChannelThreshold()");
+    cw->threshScaleEntry->Connect("ValueSet(Long_t)", "GuiController", this, "SetChannelThreshold()");
 
     cw->zAxisRangeEntry[0]->SetNumber(data->wfs.at(0)->zmin);
     cw->zAxisRangeEntry[1]->SetNumber(data->wfs.at(0)->zmax);
@@ -158,7 +160,7 @@ void GuiController::SetChannelThreshold()
     for (int ind=3; ind<6; ind++) {
         vw->can->cd(ind+1);
         ht = data->thresh_histos.at(ind-3);
-        data->wfs.at(ind)->SetThreshold(ht);
+        data->wfs.at(ind)->SetThreshold(ht, cw->threshScaleEntry->GetNumber());
         data->wfs.at(ind)->Draw2D();
         vw->can->GetPad(ind+1)->Modified();
         vw->can->GetPad(ind+1)->Update();
@@ -262,7 +264,7 @@ void GuiController::ChannelChanged()
     if (adc_max > adc_min) {
         hMain->GetYaxis()->SetRangeUser(adc_min, adc_max);
     }
-    if (binary_search(data->bad_channels.begin(), data->bad_channels.end(), channel)) {
+    if (binary_search(data->bad_channels->bad_id.begin(), data->bad_channels->bad_id.end(), channel)) {
         hMain->SetTitle( TString::Format("%s (bad channel)", hMain->GetTitle()) );
     }
 

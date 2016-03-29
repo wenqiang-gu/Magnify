@@ -33,8 +33,15 @@ ControlWindow::ControlWindow(const TGWindow *p, int w, int h)
     badChanelButton->SetState(kButtonUp);
     group_general->AddFrame(badChanelButton, new TGLayoutHints(kLHintsTop | kLHintsLeft,  1, 1, 1, 1));
 
-    setThreshButton = new TGTextButton(group_general, "set channel threshold");
-    group_general->AddFrame(setThreshButton, new TGLayoutHints(kLHintsTop | kLHintsExpandX, 3, 2, 2, 2));
+    setThreshButton = new TGTextButton(group_general, "channel threshold x");
+    group_general->AddFrame(setThreshButton, new TGLayoutHints(kLHintsTop | kLHintsLeft, 3, 2, 2, 2));
+    threshScaleEntry = new TGNumberEntry(group_general, 3, 5, -1,
+        TGNumberFormat::kNESReal,
+        TGNumberFormat::kNEANonNegative,
+        TGNumberFormat::kNELLimitMinMax,
+        0, 10);
+    threshScaleEntry->SetNumber(1);
+    group_general->AddFrame(threshScaleEntry, new TGLayoutHints(kLHintsTop | kLHintsLeft,  1, 1, 1, 1));
 
     TGGroupFrame *group[3];
     for (int i=0; i<3; i++) {

@@ -22,6 +22,7 @@ public:
     TGCheckButton *rawWfButton;
     TGTextButton  *unZoomButton;
     TGTextButton  *setThreshButton;
+    TGNumberEntry *threshScaleEntry;
 
     ClassDef(ControlWindow, 0)
 };

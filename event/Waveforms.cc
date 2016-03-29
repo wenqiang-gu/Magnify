@@ -1,4 +1,5 @@
 #include "Waveforms.h"
+#include "BadChannels.h"
 
 #include "TH2F.h"
 #include "TH1F.h"
@@ -18,7 +19,7 @@ using namespace std;
 Waveforms::Waveforms()
 {}
 
-Waveforms::Waveforms(TH2F *h, vector<int>* v, TString name, TString title, double scale)
+Waveforms::Waveforms(TH2F *h, BadChannels* v, TString name, TString title, double scale)
 {
     // 2D hist: x: channel id; y: tdc 0 - 9600 or 0 - 9600/4
     hOrig = h;
@@ -41,16 +42,18 @@ Waveforms::Waveforms(TH2F *h, vector<int>* v, TString name, TString title, doubl
     hDummy->SetXTitle("channel");
     hDummy->SetYTitle("ticks");
 
-    int size = bad_channels->size();
+    int size = bad_channels->bad_id.size();
     TLine *line = 0;
     for (int i=0; i<size; i++) {
-        int channel = bad_channels->at(i);
+        int channel = bad_channels->bad_id.at(i);
         if (channel>=firstChannel && channel<firstChannel+nChannels) {
             line = new TLine(
                 channel,
-                hOrig->GetYaxis()->GetBinLowEdge(0),
+                // hOrig->GetYaxis()->GetBinLowEdge(0),
+                bad_channels->bad_start.at(i),
                 channel,
-                hOrig->GetYaxis()->GetBinUpEdge(nTDCs)
+                // hOrig->GetYaxis()->GetBinUpEdge(nTDCs)
+                bad_channels->bad_end.at(i)
             );
             line->SetLineColorAlpha(kGray, 0.5);
             lines.push_back(line);
@@ -114,14 +117,14 @@ void Waveforms::SetThreshold(double x)
     cout << boxes.size() <<  " created. " << endl;
 }
 
-void Waveforms::SetThreshold(TH1I *h)
+void Waveforms::SetThreshold(TH1I *h, double scaling)
 {
     Clear();
     useChannelThreshold = true;
     TBox *box = 0;
     cout << fName << ": creating boxes ... " << flush;
     for (int i=1; i<=nChannels; i++) {
-        double channelThreshold = h->GetBinContent(i) * fScale;
+        double channelThreshold = h->GetBinContent(i) * fScale * scaling;
         for (int j=1; j<=nTDCs; j++) {
             double content = hOrig->GetBinContent(i, j) * fScale;
             if (TMath::Abs(content)>channelThreshold) {

@@ -6,6 +6,7 @@ class TH1I;
 class TFile;
 class Waveforms;
 class RawWaveforms;
+class BadChannels;
 
 #include <vector>
 
@@ -18,7 +19,10 @@ public:
 
     TFile *rootFile;
     vector<Waveforms*> wfs;
-    vector<int> bad_channels;
+    BadChannels* bad_channels;
+    // vector<int> bad_channels;
+    // vector<int> bad_start;
+    // vector<int> bad_end;
     vector<RawWaveforms*> raw_wfs;
     vector<TH1I*> thresh_histos;
     int runNo;
@@ -27,7 +31,7 @@ public:
 
 private:
     void load_waveform(const char* name, const char* title="", double scale=1);
-    void load_badchannels();
+    // void load_badchannels();
     void load_runinfo();
 };
 

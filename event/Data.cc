@@ -1,6 +1,7 @@
 #include "Data.h"
 #include "Waveforms.h"
 #include "RawWaveforms.h"
+#include "BadChannels.h"
 
 #include "TH2F.h"
 #include "TH2I.h"
@@ -27,8 +28,8 @@ Data::Data(const char* filename)
     	msg += filename;
     	throw runtime_error(msg.c_str());
     }
-
-    load_badchannels();
+    bad_channels = new BadChannels( (TTree*)rootFile->Get("T_bad") );
+    // load_badchannels();
     load_runinfo();
 
     load_waveform("hu_raw", "U Plane (Denoised)");
@@ -49,20 +50,24 @@ Data::Data(const char* filename)
 
 }
 
-void Data::load_badchannels()
-{
-    TTree *t = (TTree*)rootFile->Get("T_bad");
-    if (t) {
-        int chid;
-        t->SetBranchAddress("chid", &chid);
-        int nEntries = t->GetEntries();
-        for (int i=0; i<nEntries; i++) {
-            t->GetEntry(i);
-            bad_channels.push_back(chid);
-            // cout << chid << endl;
-        }
-    }
-}
+// void Data::load_badchannels()
+// {
+//     TTree *t = (TTree*)rootFile->Get("T_bad");
+//     if (t) {
+//         int chid;
+//         t->SetBranchAddress("chid", &chid);
+//         t->SetBranchAddress("start", &start_time);
+//         t->SetBranchAddress("end", &end_time);
+//         int nEntries = t->GetEntries();
+//         for (int i=0; i<nEntries; i++) {
+//             t->GetEntry(i);
+//             bad_channels.push_back(chid);
+//             bad_start.push_back(start);
+//             bad_end.push_back(end);
+//             // cout << chid << endl;
+//         }
+//     }
+// }
 
 void Data::load_runinfo()
 {
@@ -91,7 +96,7 @@ void Data::load_waveform(const char* name, const char* title, double scale)
     }
     hist->SetXTitle("channel");
     hist->SetYTitle("ticks");
-    wfs.push_back( new Waveforms(hist, &bad_channels, name, title, scale) );
+    wfs.push_back( new Waveforms(hist, bad_channels, name, title, scale) );
 }
 
 

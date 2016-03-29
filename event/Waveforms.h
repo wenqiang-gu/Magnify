@@ -9,15 +9,16 @@ class TH1F;
 class TH1I;
 class TBox;
 class TLine;
+class BadChannels;
 
 class Waveforms {
 public:
     Waveforms();
-    Waveforms(TH2F *h, vector<int>* v, TString name="", TString title="", double scale=1);
+    Waveforms(TH2F *h, BadChannels* v, TString name="", TString title="", double scale=1);
     virtual ~Waveforms();
 
     void SetThreshold(double x);
-    void SetThreshold(TH1I* h);
+    void SetThreshold(TH1I* h, double scaling=1);
 
     void SetZRange(int min, int max);
     void Draw2D();
@@ -30,7 +31,8 @@ public:
     TH2F *hDummy;
     vector<TBox*> boxes;
     vector<float> box_values;
-    vector<int>* bad_channels;
+    // vector<int>* bad_channels;
+    BadChannels *bad_channels;
     vector<TLine*> lines;
 
     int nChannels;  // nBinsX
