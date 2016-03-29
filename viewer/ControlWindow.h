@@ -21,6 +21,7 @@ public:
     TGCheckButton *badChanelButton;
     TGCheckButton *rawWfButton;
     TGTextButton  *unZoomButton;
+    TGTextButton  *setThreshButton;
 
     ClassDef(ControlWindow, 0)
 };

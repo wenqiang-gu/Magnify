@@ -6,6 +6,7 @@
 
 class TH2F;
 class TH1F;
+class TH1I;
 class TBox;
 class TLine;
 
@@ -16,6 +17,8 @@ public:
     virtual ~Waveforms();
 
     void SetThreshold(double x);
+    void SetThreshold(TH1I* h);
+
     void SetZRange(int min, int max);
     void Draw2D();
     TH1F* Draw1D(int chanNo, const char* options="");
@@ -37,6 +40,7 @@ public:
     TString fName;
     TString fTitle;
     double threshold;
+    bool useChannelThreshold;
     int zmin;
     int zmax;
 };

@@ -29,6 +29,7 @@ Waveforms::Waveforms(TH2F *h, vector<int>* v, TString name, TString title, doubl
     firstChannel = hOrig->GetXaxis()->GetBinCenter(1);
     fName = (name == "" ? hOrig->GetName() : name.Data());
     fTitle = (title == "" ? hOrig->GetTitle() : title.Data());
+    useChannelThreshold = false;
 
     const int DUMMY_NBINS = 100;
     hDummy = new TH2F(
@@ -90,6 +91,7 @@ void Waveforms::SetZRange(int min, int max)
 void Waveforms::SetThreshold(double x)
 {
     Clear();
+    useChannelThreshold = false;
     threshold = x;
     TBox *box = 0;
     cout << fName << ": creating boxes ... " << flush;
@@ -97,6 +99,32 @@ void Waveforms::SetThreshold(double x)
         for (int j=1; j<=nTDCs; j++) {
             double content = hOrig->GetBinContent(i, j) * fScale;
             if (TMath::Abs(content)>threshold) {
+                box = new TBox(
+                    hOrig->GetXaxis()->GetBinLowEdge(i),
+                    hOrig->GetYaxis()->GetBinLowEdge(j),
+                    hOrig->GetXaxis()->GetBinUpEdge(i),
+                    hOrig->GetYaxis()->GetBinUpEdge(j)
+                );
+                box->SetFillColor(kRed);
+                boxes.push_back(box);
+                box_values.push_back(TMath::Abs(content));
+            }
+        }
+    }
+    cout << boxes.size() <<  " created. " << endl;
+}
+
+void Waveforms::SetThreshold(TH1I *h)
+{
+    Clear();
+    useChannelThreshold = true;
+    TBox *box = 0;
+    cout << fName << ": creating boxes ... " << flush;
+    for (int i=1; i<=nChannels; i++) {
+        int channelThreshold = h->GetBinContent(i) * fScale;
+        for (int j=1; j<=nTDCs; j++) {
+            double content = hOrig->GetBinContent(i, j) * fScale;
+            if (TMath::Abs(content)>channelThreshold) {
                 box = new TBox(
                     hOrig->GetXaxis()->GetBinLowEdge(i),
                     hOrig->GetYaxis()->GetBinLowEdge(j),

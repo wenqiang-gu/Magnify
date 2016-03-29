@@ -26,6 +26,7 @@ public:
     void ThresholdVChanged() { ThresholdChanged(1); }
     void ThresholdWChanged() { ThresholdChanged(2); }
     void ThresholdChanged(int i);
+    void SetChannelThreshold();
     void ZRangeChanged();
     void ChannelChanged();
     void UpdateShowBadChannel();

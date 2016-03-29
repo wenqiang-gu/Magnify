@@ -33,6 +33,9 @@ ControlWindow::ControlWindow(const TGWindow *p, int w, int h)
     badChanelButton->SetState(kButtonUp);
     group_general->AddFrame(badChanelButton, new TGLayoutHints(kLHintsTop | kLHintsLeft,  1, 1, 1, 1));
 
+    setThreshButton = new TGTextButton(group_general, "set channel threshold");
+    group_general->AddFrame(setThreshButton, new TGLayoutHints(kLHintsTop | kLHintsExpandX, 3, 2, 2, 2));
+
     TGGroupFrame *group[3];
     for (int i=0; i<3; i++) {
         group[i] = new TGGroupFrame(this, "", kHorizontalFrame);

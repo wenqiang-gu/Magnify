@@ -81,6 +81,7 @@ void GuiController::InitConnections()
     cw->threshEntry[0]->Connect("ValueSet(Long_t)", "GuiController", this, "ThresholdUChanged()");
     cw->threshEntry[1]->Connect("ValueSet(Long_t)", "GuiController", this, "ThresholdVChanged()");
     cw->threshEntry[2]->Connect("ValueSet(Long_t)", "GuiController", this, "ThresholdWChanged()");
+    cw->setThreshButton->Connect("Clicked()", "GuiController", this, "SetChannelThreshold()");
 
     cw->zAxisRangeEntry[0]->SetNumber(data->wfs.at(0)->zmin);
     cw->zAxisRangeEntry[1]->SetNumber(data->wfs.at(0)->zmax);
@@ -143,6 +144,21 @@ void GuiController::ThresholdChanged(int i)
     for (int ind=i; ind<6; ind+=3) {
         vw->can->cd(ind+1);
         data->wfs.at(ind)->SetThreshold(newThresh);
+        data->wfs.at(ind)->Draw2D();
+        vw->can->GetPad(ind+1)->Modified();
+        vw->can->GetPad(ind+1)->Update();
+    }
+}
+
+void GuiController::SetChannelThreshold()
+{
+    // cout << "new threshold: " << newThresh << endl;
+
+    TH1I *ht = 0;
+    for (int ind=3; ind<6; ind++) {
+        vw->can->cd(ind+1);
+        ht = data->thresh_histos.at(ind-3);
+        data->wfs.at(ind)->SetThreshold(ht);
         data->wfs.at(ind)->Draw2D();
         vw->can->GetPad(ind+1)->Modified();
         vw->can->GetPad(ind+1)->Update();
