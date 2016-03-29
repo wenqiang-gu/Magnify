@@ -121,7 +121,7 @@ void Waveforms::SetThreshold(TH1I *h)
     TBox *box = 0;
     cout << fName << ": creating boxes ... " << flush;
     for (int i=1; i<=nChannels; i++) {
-        int channelThreshold = h->GetBinContent(i) * fScale;
+        double channelThreshold = h->GetBinContent(i) * fScale;
         for (int j=1; j<=nTDCs; j++) {
             double content = hOrig->GetBinContent(i, j) * fScale;
             if (TMath::Abs(content)>channelThreshold) {
