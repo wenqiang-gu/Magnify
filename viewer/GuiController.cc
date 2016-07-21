@@ -95,6 +95,11 @@ void GuiController::InitConnections()
 
     cw->channelEntry->Connect("ValueSet(Long_t)", "GuiController", this, "ChannelChanged()");
     cw->badChanelButton->Connect("Clicked()", "GuiController", this, "UpdateShowBadChannel()");
+    cw->badChanelButton->SetToolTipText(TString::Format("U: %lu, V: %lu, Y: %lu",
+        data->wfs.at(0)->lines.size(),
+        data->wfs.at(1)->lines.size(),
+        data->wfs.at(2)->lines.size()
+    ));
     cw->rawWfButton->Connect("Clicked()", "GuiController", this, "UpdateShowRaw()");
     cw->unZoomButton->Connect("Clicked()", "GuiController", this, "UnZoom()");
 
