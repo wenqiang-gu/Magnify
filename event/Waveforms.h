@@ -45,6 +45,7 @@ public:
     bool useChannelThreshold;
     int zmin;
     int zmax;
+    bool isDecon;
 };
 
 #endif

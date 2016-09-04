@@ -30,6 +30,8 @@ Waveforms::Waveforms(TH2F *h, BadChannels* v, TString name, TString title, doubl
     firstChannel = hOrig->GetXaxis()->GetBinCenter(1);
     fName = (name == "" ? hOrig->GetName() : name.Data());
     fTitle = (title == "" ? hOrig->GetTitle() : title.Data());
+    isDecon = name.Contains("decon") ? true : false;
+    // cout << "isDecon: " << isDecon << endl;
     useChannelThreshold = false;
 
     const int DUMMY_NBINS = 100;
@@ -127,7 +129,8 @@ void Waveforms::SetThreshold(TH1I *h, double scaling)
         double channelThreshold = h->GetBinContent(i) * fScale * scaling;
         for (int j=1; j<=nTDCs; j++) {
             double content = hOrig->GetBinContent(i, j) * fScale;
-            if (TMath::Abs(content)>channelThreshold) {
+            if (!isDecon) content = TMath::Abs(content);
+            if (content>channelThreshold) {
                 box = new TBox(
                     hOrig->GetXaxis()->GetBinLowEdge(i),
                     hOrig->GetYaxis()->GetBinLowEdge(j),
@@ -136,7 +139,7 @@ void Waveforms::SetThreshold(TH1I *h, double scaling)
                 );
                 box->SetFillColor(kRed);
                 boxes.push_back(box);
-                box_values.push_back(TMath::Abs(content));
+                box_values.push_back(content);
             }
         }
     }
