@@ -94,6 +94,7 @@ void GuiController::InitConnections()
     cw->timeRangeEntry[1]->SetNumber(data->wfs.at(0)->nTDCs);
 
     cw->channelEntry->Connect("ValueSet(Long_t)", "GuiController", this, "ChannelChanged()");
+    cw->timeEntry->Connect("ValueSet(Long_t)", "GuiController", this, "TimeChanged()");
     cw->badChanelButton->Connect("Clicked()", "GuiController", this, "UpdateShowBadChannel()");
     cw->badChanelButton->SetToolTipText(TString::Format("U: %lu, V: %lu, Y: %lu",
         data->wfs.at(0)->lines.size(),
@@ -251,6 +252,9 @@ void GuiController::UpdateShowRaw()
 
 void GuiController::ChannelChanged()
 {
+    if (cw->timeModeButton->IsDown()) {
+        return; // skip if time mode is selected
+    }
     int channel = cw->channelEntry->GetNumber();
     cout << "channel: " << channel << endl;
     int wfsNo = 0;
@@ -296,6 +300,25 @@ void GuiController::ChannelChanged()
     vw->can->GetPad(padNo)->Update();
 }
 
+void GuiController::TimeChanged()
+{
+    if (cw->timeModeButton->IsDown()) {
+        int tickNo = cw->timeEntry->GetNumber();
+        TH1F *hTick  = 0;
+        for (int k=3; k<=5; k++) { // only draw decon signal
+            int padNo = k+4;
+            vw->can->cd(padNo);
+            hTick = data->wfs.at(k)->Draw1DTick(tickNo); // draw time
+            hTick->SetLineColor(kRed);
+
+            vw->can->GetPad(padNo)->SetGridx();
+            vw->can->GetPad(padNo)->SetGridy();
+            vw->can->GetPad(padNo)->Modified();
+            vw->can->GetPad(padNo)->Update();
+        }
+    }
+}
+
 void GuiController::ProcessCanvasEvent(Int_t ev, Int_t x, Int_t y, TObject *selected)
 {
     if (ev == 11) { // clicked
@@ -315,13 +338,18 @@ void GuiController::ProcessCanvasEvent(Int_t ev, Int_t x, Int_t y, TObject *sele
             int wfNo = padNo - 1;
             wfNo = wfNo < 3 ? wfNo : wfNo-3;  // draw raw first
             int chanNo = TMath::Nint(xx); // round
+            int tickNo = TMath::Nint(yy); // round
             // data->wfs.at(wfNo)->Draw1D(chanNo);
             // TH1F *h = data->wfs.at(wfNo+3)->Draw1D(chanNo, "same"); // draw calib
             // h->SetLineColor(kRed);
             // TH1I *hh = data->raw_wfs.at(wfNo)->Draw1D(chanNo, "same"); // draw calib
             // hh->SetLineColor(kBlue);
             cw->channelEntry->SetNumber(chanNo);
+            cw->timeEntry->SetNumber(tickNo);
+
             ChannelChanged();
+            TimeChanged();
+
             // cw->timeRangeEntry[0]->SetNumber(0);
             // cw->timeRangeEntry[1]->SetNumber(data->wfs.at(0)->nTDCs);
         }

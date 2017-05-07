@@ -33,7 +33,7 @@ ControlWindow::ControlWindow(const TGWindow *p, int w, int h)
     badChanelButton->SetState(kButtonUp);
     group_general->AddFrame(badChanelButton, new TGLayoutHints(kLHintsTop | kLHintsLeft,  1, 1, 1, 1));
 
-    setThreshButton = new TGTextButton(group_general, "channel threshold x");
+    setThreshButton = new TGTextButton(group_general, "ch. thresh. x");
     group_general->AddFrame(setThreshButton, new TGLayoutHints(kLHintsTop | kLHintsLeft, 3, 2, 2, 2));
     threshScaleEntry = new TGNumberEntry(group_general, 3, 5, -1,
         TGNumberFormat::kNESReal,
@@ -42,6 +42,18 @@ ControlWindow::ControlWindow(const TGWindow *p, int w, int h)
         0, 10);
     threshScaleEntry->SetNumber(1);
     group_general->AddFrame(threshScaleEntry, new TGLayoutHints(kLHintsTop | kLHintsLeft,  1, 1, 1, 1));
+
+    group_general->AddFrame(new TGLabel(group_general, "tick: "), new TGLayoutHints(kLHintsTop | kLHintsLeft,  2, 2, 1, 1));
+    timeEntry = new TGNumberEntry(group_general, 0, 5, -1,
+        TGNumberFormat::kNESInteger,
+        TGNumberFormat::kNEANonNegative,
+        TGNumberFormat::kNELLimitMinMax,
+        0, 8255);
+    group_general->AddFrame(timeEntry, new TGLayoutHints(kLHintsTop | kLHintsLeft,  1, 1, 1, 1));
+
+    timeModeButton = new TGCheckButton(group_general, "time mode  ");
+    timeModeButton->SetState(kButtonUp);
+    group_general->AddFrame(timeModeButton, new TGLayoutHints(kLHintsTop | kLHintsLeft,  1, 1, 1, 1));
 
     TGGroupFrame *group[3];
     for (int i=0; i<3; i++) {

@@ -29,6 +29,7 @@ public:
     void SetChannelThreshold();
     void ZRangeChanged();
     void ChannelChanged();
+    void TimeChanged();
     void UpdateShowBadChannel();
     void UpdateShowRaw();
     void UnZoom();

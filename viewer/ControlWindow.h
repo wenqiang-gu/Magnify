@@ -14,11 +14,15 @@ public:
     virtual ~ControlWindow();
 
     TGNumberEntry *channelEntry;
+    TGNumberEntry *timeEntry;
+
     TGNumberEntry *threshEntry[3];
     TGNumberEntry *zAxisRangeEntry[2];
     TGNumberEntry *timeRangeEntry[2];
     TGNumberEntry *adcRangeEntry[2];
     TGCheckButton *badChanelButton;
+    TGCheckButton *timeModeButton;
+
     TGCheckButton *rawWfButton;
     TGTextButton  *unZoomButton;
     TGTextButton  *setThreshButton;

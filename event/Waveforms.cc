@@ -200,3 +200,26 @@ TH1F* Waveforms::Draw1D(int chanNo, const char* options)
 
     return hWire;
 }
+
+TH1F* Waveforms::Draw1DTick(int tick, const char* options)
+{
+    TString name = TString::Format("hTick_%s", fName.Data());
+    TString title = TString::Format("Time Tick %i", tick);
+
+    TH1F *hTick = (TH1F*)gDirectory->FindObject(name);
+    if (hTick) delete hTick;
+
+    hTick = new TH1F(name, title.Data(),
+        nChannels,
+        hOrig->GetXaxis()->GetBinLowEdge(0),
+        hOrig->GetXaxis()->GetBinUpEdge(nChannels)
+    );
+    int binNo = hOrig->GetYaxis()->FindBin(tick);
+    for (int i=1; i<=nChannels; i++) {
+        hTick->SetBinContent(i, hOrig->GetBinContent(i, binNo)*fScale);
+    }
+    hTick->Draw(options);
+    hTick->GetXaxis()->SetTitle("channel");
+
+    return hTick;
+}

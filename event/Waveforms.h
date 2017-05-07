@@ -23,6 +23,7 @@ public:
     void SetZRange(int min, int max);
     void Draw2D();
     TH1F* Draw1D(int chanNo, const char* options="");
+    TH1F* Draw1DTick(int chanNo, const char* options="");
     void Clear();
     void DrawLines();
     void HideLines();
