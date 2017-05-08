@@ -77,7 +77,7 @@ ControlWindow::ControlWindow(const TGWindow *p, int w, int h)
     group_misc->SetTitlePos(TGGroupFrame::kLeft);
     AddFrame(group_misc, new TGLayoutHints(kLHintsTop | kLHintsLeft, 2, 2, 1, 1));
 
-    group_misc->AddFrame(new TGLabel(group_misc, "time range: "), new TGLayoutHints(kLHintsTop | kLHintsLeft,  2, 2, 1, 1));
+    group_misc->AddFrame(new TGLabel(group_misc, "x range: "), new TGLayoutHints(kLHintsTop | kLHintsLeft,  2, 2, 1, 1));
     for (int i=0; i<2; i++) {
         timeRangeEntry[i] = new TGNumberEntry(group_misc, 0, 5, -1,
             TGNumberFormat::kNESInteger,
@@ -87,7 +87,7 @@ ControlWindow::ControlWindow(const TGWindow *p, int w, int h)
         group_misc->AddFrame(timeRangeEntry[i], new TGLayoutHints(kLHintsTop | kLHintsLeft,  1, 1, 1, 1));
     }
 
-    group_misc->AddFrame(new TGLabel(group_misc, "ADC range: "), new TGLayoutHints(kLHintsTop | kLHintsLeft,  2, 2, 1, 1));
+    group_misc->AddFrame(new TGLabel(group_misc, "y range: "), new TGLayoutHints(kLHintsTop | kLHintsLeft,  2, 2, 1, 1));
     for (int i=0; i<2; i++) {
         adcRangeEntry[i] = new TGNumberEntry(group_misc, 0, 5, -1,
             TGNumberFormat::kNESInteger,

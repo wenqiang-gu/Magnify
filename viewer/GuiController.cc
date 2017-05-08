@@ -303,6 +303,7 @@ void GuiController::ChannelChanged()
 void GuiController::TimeChanged()
 {
     if (cw->timeModeButton->IsDown()) {
+
         int tickNo = cw->timeEntry->GetNumber();
         TH1F *hTick  = 0;
         for (int k=3; k<=5; k++) { // only draw decon signal
@@ -310,6 +311,28 @@ void GuiController::TimeChanged()
             vw->can->cd(padNo);
             hTick = data->wfs.at(k)->Draw1DTick(tickNo); // draw time
             hTick->SetLineColor(kRed);
+
+            TString name = TString::Format("hth_%i", k-3);
+            TH1I *hth = (TH1I*)gDirectory->FindObject(name);
+            if (hth) delete hth;
+
+            hth = (TH1I*)data->thresh_histos.at(k-3)->Clone(name.Data());
+            hth->Scale(data->wfs.at(k)->fScale);
+            hth->Draw("same");
+            hth->SetLineColor(kBlack);
+
+            int channel_min = cw->timeRangeEntry[0]->GetNumber();
+            int channel_max = cw->timeRangeEntry[1]->GetNumber();
+
+            if (channel_min>0) {
+                hTick->GetXaxis()->SetRangeUser(channel_min, channel_max);
+            }
+
+            int adc_min = cw->adcRangeEntry[0]->GetNumber();
+            int adc_max = cw->adcRangeEntry[1]->GetNumber();
+            if (adc_max > adc_min) {
+                hTick->GetYaxis()->SetRangeUser(adc_min, adc_max);
+            }
 
             vw->can->GetPad(padNo)->SetGridx();
             vw->can->GetPad(padNo)->SetGridy();
