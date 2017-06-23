@@ -11,6 +11,7 @@
 #include "TPad.h"
 #include "TPaletteAxis.h"
 #include "TMath.h"
+#include "TString.h"
 
 #include <iostream>
 #include <vector>
@@ -185,6 +186,8 @@ TH1F* Waveforms::Draw1D(int chanNo, const char* options)
 
     TH1F *hWire = (TH1F*)gDirectory->FindObject(name);
     if (hWire) delete hWire;
+    TH1F *h2dummy = (TH1F*)gDirectory->FindObject(name+"_2d_dummy");
+    if (h2dummy) delete h2dummy;
 
     hWire = new TH1F(name, title.Data(),
         nTDCs,
@@ -195,8 +198,14 @@ TH1F* Waveforms::Draw1D(int chanNo, const char* options)
     for (int i=1; i<=nTDCs; i++) {
         hWire->SetBinContent(i, hOrig->GetBinContent(binNo, i)*fScale);
     }
-    hWire->Draw(options);
-    hWire->GetXaxis()->SetTitle("ticks");
+    TString s("same");
+    if (s != options) {
+        TH2F *h2dummy = new TH2F(name+"_2d_dummy", "", 100, 0, nTDCs, 100, -300,300);
+        h2dummy->GetYaxis()->SetRangeUser(hWire->GetMinimum()*1.05, hWire->GetMaximum()*1.05);
+        h2dummy->Draw();
+        h2dummy->GetXaxis()->SetTitle("ticks");
+    }
+    hWire->Draw("same");
 
     return hWire;
 }

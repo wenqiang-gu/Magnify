@@ -60,8 +60,6 @@ GuiController::GuiController(const TGWindow *p, int w, int h, const char* fn)
         TH1F *h = data->wfs.at(i+3)->Draw1D(chanNo, "same"); // draw calib
         h->SetLineColor(kRed);
         hCurrent[i] = h;
-        // cw->channelEntry->SetNumber(chanNo);
-        // ChannelChanged();
     }
 
     InitConnections();
