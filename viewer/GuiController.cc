@@ -262,9 +262,17 @@ void GuiController::ChannelChanged()
     int padNo = wfsNo+7;
     vw->can->cd(padNo);
 
-    TH1F *hMain = data->wfs.at(wfsNo)->Draw1D(channel);
-    hCurrent[wfsNo] = hMain;
-    hMain->SetLineColor(kBlack);
+    TH1F *hwf = data->wfs.at(wfsNo)->Draw1D(channel);
+    hCurrent[wfsNo] = hwf;
+    hwf->SetLineColor(kBlack);
+
+    TString name = TString::Format("hWire_%s_2d_dummy", data->wfs.at(wfsNo)->fName.Data());
+    TH2F *hMain = (TH2F*)gDirectory->FindObject(name);
+    if (!hMain) {
+        cout << "Error: cannot find " << name << endl;
+        return;
+    }
+
     hMain->GetXaxis()->SetRangeUser(cw->timeRangeEntry[0]->GetNumber(), cw->timeRangeEntry[1]->GetNumber());
     int adc_min = cw->adcRangeEntry[0]->GetNumber();
     int adc_max = cw->adcRangeEntry[1]->GetNumber();
