@@ -200,7 +200,7 @@ TH1F* Waveforms::Draw1D(int chanNo, const char* options)
     }
     TString s("same");
     if (s != options) {
-        TH2F *h2dummy = new TH2F(name+"_2d_dummy", "", 100, 0, nTDCs, 100, -300,300);
+        TH2F *h2dummy = new TH2F(name+"_2d_dummy", title.Data(), 100, 0, nTDCs, 100, -300,300);
         h2dummy->GetYaxis()->SetRangeUser(hWire->GetMinimum()*1.05, hWire->GetMaximum()*1.05);
         h2dummy->Draw();
         h2dummy->GetXaxis()->SetTitle("ticks");
