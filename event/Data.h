@@ -31,6 +31,8 @@ public:
 
 private:
     void load_waveform(const char* name, const char* title="", double scale=1);
+    void load_rawwaveform(const char* name, const char* baseline_name);
+    void load_threshold(const char* name);
     // void load_badchannels();
     void load_runinfo();
 };
