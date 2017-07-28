@@ -18,7 +18,7 @@ public:
     virtual ~Waveforms();
 
     void SetThreshold(double x);
-    void SetThreshold(TH1F* h, double scaling=1);
+    void SetThreshold(TH1I* h, double scaling=1);
 
     void SetZRange(int min, int max);
     void Draw2D();

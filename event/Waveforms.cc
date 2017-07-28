@@ -120,7 +120,7 @@ void Waveforms::SetThreshold(double x)
     cout << boxes.size() <<  " created. " << endl;
 }
 
-void Waveforms::SetThreshold(TH1F *h, double scaling)
+void Waveforms::SetThreshold(TH1I *h, double scaling)
 {
     Clear();
     useChannelThreshold = true;

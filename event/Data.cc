@@ -20,7 +20,7 @@ using namespace std;
 Data::Data()
 {}
 
-Data::Data(const char* filename, const char* frame)
+Data::Data(const char* filename)
 {
     rootFile = TFile::Open(filename);
     if (!rootFile) {
@@ -36,10 +36,9 @@ Data::Data(const char* filename, const char* frame)
     load_waveform("hv_raw", "V Plane (Denoised)");
     load_waveform("hw_raw", "W Plane (Denoised)");
 
-    for (int iplane=0; iplane<3; ++iplane) {
-        load_waveform(Form("h%c_%s", 'u'+iplane, frame),
-                      Form("%c Plane (Deconvoluted)", 'U'+iplane), 1./500);
-    }
+    load_waveform("hu_decon", "U Plane (Deconvoluted)", 1./500);
+    load_waveform("hv_decon", "V Plane (Deconvoluted)", 1./500);
+    load_waveform("hw_decon", "W Plane (Deconvoluted)", 1./500);
 
     load_rawwaveform("hu_orig", "hu_baseline");
     load_rawwaveform("hv_orig", "hv_baseline");
@@ -136,9 +135,9 @@ void Data::load_threshold(const char* name)
         // throw runtime_error(msg.c_str());
         obj = new TH1I(name, "", 4000,0,4000);
     }
-    thresh_hist_t* hist = dynamic_cast<thresh_hist_t*>(obj);
+    TH1I* hist = dynamic_cast<TH1I*>(obj);
     if (!hist) {
-        string msg = "Threshold histogram is the wrong type: ";
+        string msg = "Not a TH1I: ";
         msg += name;
         throw runtime_error(msg.c_str());
     }

@@ -2,7 +2,7 @@
 #define DATA_H
 
 class TH2F;
-class TH1F;
+class TH1I;
 class TFile;
 class Waveforms;
 class RawWaveforms;
@@ -13,7 +13,7 @@ class BadChannels;
 class Data {
 public:
     Data();
-    Data(const char* filename, const char* frame="decon");
+    Data(const char* filename);
 
     virtual ~Data();
 
@@ -24,8 +24,7 @@ public:
     // vector<int> bad_start;
     // vector<int> bad_end;
     vector<RawWaveforms*> raw_wfs;
-    typedef TH1F thresh_hist_t;
-    vector<thresh_hist_t*> thresh_histos;
+    vector<TH1I*> thresh_histos;
     int runNo;
     int subRunNo;
     int eventNo;
