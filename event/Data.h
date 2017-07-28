@@ -13,7 +13,7 @@ class BadChannels;
 class Data {
 public:
     Data();
-    Data(const char* filename);
+    Data(const char* filename, const char* frame);
 
     virtual ~Data();
 

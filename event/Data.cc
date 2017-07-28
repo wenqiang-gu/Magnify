@@ -20,7 +20,7 @@ using namespace std;
 Data::Data()
 {}
 
-Data::Data(const char* filename)
+Data::Data(const char* filename, const char* frame)
 {
     rootFile = TFile::Open(filename);
     if (!rootFile) {
@@ -36,9 +36,10 @@ Data::Data(const char* filename)
     load_waveform("hv_raw", "V Plane (Denoised)");
     load_waveform("hw_raw", "W Plane (Denoised)");
 
-    load_waveform("hu_decon", "U Plane (Deconvoluted)", 1./500);
-    load_waveform("hv_decon", "V Plane (Deconvoluted)", 1./500);
-    load_waveform("hw_decon", "W Plane (Deconvoluted)", 1./500);
+    for (int iplane=0; iplane<3; ++iplane) {
+        load_waveform(Form("h%c_%s", 'u'+iplane, frame),
+                      Form("%c Plane (Deconvoluted)", 'U'+iplane), 1./500);
+    }
 
     load_rawwaveform("hu_orig", "hu_baseline");
     load_rawwaveform("hv_orig", "hv_baseline");
@@ -135,14 +136,15 @@ void Data::load_threshold(const char* name)
         // throw runtime_error(msg.c_str());
         obj = new TH1I(name, "", 4000,0,4000);
     }
-    TH1I* hist = dynamic_cast<TH1I*>(obj);
-    if (!hist) {
-        string msg = "Not a TH1I: ";
-        msg += name;
-        throw runtime_error(msg.c_str());
+    TH1* hist = dynamic_cast<TH1*>(obj);
+    if (hist && (hist->InheritsFrom("TH1F") || hist->InheritsFrom("TH1I"))) {
+        thresh_histos.push_back( (TH1I*) hist );
+        return;
     }
 
-    thresh_histos.push_back( hist );
+    string msg = "Neither a TH1I nor a TH1F: ";
+    msg += name;
+    throw runtime_error(msg.c_str());
 }
 
 Data::~Data()
