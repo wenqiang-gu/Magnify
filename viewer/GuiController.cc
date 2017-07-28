@@ -31,7 +31,7 @@
 using namespace std;
 
 
-GuiController::GuiController(const TGWindow *p, int w, int h, const char* fn)
+GuiController::GuiController(const TGWindow *p, int w, int h, const char* fn, const char* frame)
 {
     mw = new MainWindow(p, w, h);
     vw = mw->fViewWindow;
@@ -45,7 +45,7 @@ GuiController::GuiController(const TGWindow *p, int w, int h, const char* fn)
     else {
         filename = fn;
     }
-    data = new Data(filename.Data());
+    data = new Data(filename.Data(), frame);
     mw->SetWindowName(TString::Format("Magnify: run %i, sub-run %i, event %i",
         data->runNo, data->subRunNo, data->eventNo));
 
@@ -159,11 +159,9 @@ void GuiController::ThresholdChanged(int i)
 void GuiController::SetChannelThreshold()
 {
     // cout << "new threshold: " << newThresh << endl;
-
-    TH1I *ht = 0;
     for (int ind=3; ind<6; ind++) {
         vw->can->cd(ind+1);
-        ht = data->thresh_histos.at(ind-3);
+        auto ht = data->thresh_histos.at(ind-3);
         data->wfs.at(ind)->SetThreshold(ht, cw->threshScaleEntry->GetNumber());
         data->wfs.at(ind)->Draw2D();
         vw->can->GetPad(ind+1)->Modified();
@@ -286,8 +284,8 @@ void GuiController::ChannelChanged()
     TH1F *h = data->wfs.at(wfsNo+3)->Draw1D(channel, "same" ); // draw calib
     h->SetLineColor(kRed);
 
-    TH1I *ht = data->thresh_histos.at(wfsNo);
-    int thresh = ht->GetBinContent(ht->GetXaxis()->FindBin(channel));
+    auto *ht = data->thresh_histos.at(wfsNo);
+    auto thresh = ht->GetBinContent(ht->GetXaxis()->FindBin(channel));
     cout << "thresh: " << thresh << endl;
     TLine *l = new TLine(0, thresh/500., data->wfs.at(wfsNo)->nTDCs, thresh/500.);
     l->SetLineColor(kMagenta);
