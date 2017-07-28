@@ -17,12 +17,13 @@ The second, optional argument names which output from the signal processing to d
 - `wiener` produced by the Wire Cell toolkit, used to define ROI or "hits".
 - `gauss` produced by the Wire Cell toolkit, used for charge measurement.
 
-The call to ROOT is wrapped up into a simple shell script to simplify the command line interface:
+The call to ROOT can be be called somewhat more easily via a shell
+script wrapper.  It assumes to stay in the source directory:
 
 ```
-/path/to/magnify.sh /path/to/wcp-rootfile.root
+/path/to/magnify/magnify.sh /path/to/wcp-rootfile.root
 # or
-/path/to/magnify.sh /path/to/wct-rootfile.root gauss
+/path/to/magnify/magnify.sh /path/to/wct-rootfile.root gauss
 ```
 
 ### Example files
