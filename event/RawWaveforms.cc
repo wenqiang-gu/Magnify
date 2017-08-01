@@ -24,12 +24,29 @@ RawWaveforms::RawWaveforms(TH2I *h2, TH1I *h)
     nChannels = hOrig->GetNbinsX();
     nTDCs = hOrig->GetNbinsY();
     firstChannel = hOrig->GetXaxis()->GetBinCenter(1);
+    SetBaseline();
 }
 
 RawWaveforms::~RawWaveforms()
 {
 }
 
+void RawWaveforms::SetBaseline()
+{
+    if(hBaseline) return;
+
+    // otherwise calculate baseline myself.
+    hBaseline = new TH1I(fName+"_baseline", "", nChannels, -0.5+firstChannel, -0.5+firstChannel+nChannels);
+    cout << "calculating baseline for " << fName << " ..." << endl;
+    TH1I hf("hf","Bin Frequency",4096,0,4096); //12-bit ADC
+    for (int chid=0; chid!=nChannels; chid++) {
+        hf.Reset();
+        for (int ibin=0; ibin!=nTDCs; ibin++) {
+            hf.Fill(int(hOrig->GetBinContent(chid+1, ibin+1)));
+        }
+        hBaseline->SetBinContent(chid+1, hf.GetMaximumBin()-1);
+    }
+}
 
 TH1I* RawWaveforms::Draw1D(int chanNo, const char* options)
 {

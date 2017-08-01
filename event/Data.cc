@@ -110,20 +110,23 @@ void Data::load_rawwaveform(const char* name, const char* baseline_name)
 
     TObject* obj2 = rootFile->Get(baseline_name);
     if (!obj2) {
-        string msg = "Failed to get baseline ";
-        msg += baseline_name;
-        msg += ", create dummy ...";
-        // throw runtime_error(msg.c_str());
-        obj2 = new TH1I(baseline_name, "", hist->GetNbinsX(),0,hist->GetNbinsX());
+        // string msg = "Failed to get baseline ";
+        // msg += baseline_name;
+        // msg += ", create dummy ...";
+        // // throw runtime_error(msg.c_str());
+        // obj2 = new TH1I(baseline_name, "", hist->GetNbinsX(),0,hist->GetNbinsX());
+        raw_wfs.push_back( new RawWaveforms(hist, 0) );
     }
-    TH1I* hist2 = dynamic_cast<TH1I*>(obj2);
-    if (!hist2) {
-        string msg = "Not a TH1I: ";
-        msg += name;
-        throw runtime_error(msg.c_str());
+    else {
+        TH1I* hist2 = dynamic_cast<TH1I*>(obj2);
+        if (!hist2) {
+            string msg = "Not a TH1I: ";
+            msg += name;
+            throw runtime_error(msg.c_str());
+        }
+        raw_wfs.push_back( new RawWaveforms(hist, hist2) );
     }
 
-    raw_wfs.push_back( new RawWaveforms(hist, hist2) );
 }
 
 void Data::load_threshold(const char* name)

@@ -22,6 +22,9 @@ public:
     int nChannels;  // nBinsX
     int nTDCs;       // nBinsY
     int firstChannel;
+
+private:
+    void SetBaseline();
 };
 
 #endif
