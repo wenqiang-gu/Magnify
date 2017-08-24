@@ -13,6 +13,7 @@
 #include <string>
 #include <stdexcept>
 #include <iostream>
+#include <sstream>
 
 using namespace std;
 
@@ -66,6 +67,37 @@ void Data::load_runinfo()
     }
 }
 
+// Wrap up some ROOT pointer dancing.
+template<class NEED, class WANT>
+WANT* maybe_cast(TObject* obj, const std::vector<std::string>& okay_types, bool throw_on_err=false)
+{
+    NEED* base = dynamic_cast<NEED*>(obj);
+    if (!base) {
+	return nullptr;
+    }
+    bool ok = false;
+    for (auto type_name : okay_types) {
+	if (base->InheritsFrom(type_name.c_str())) {
+	    ok = true;
+	    break;
+	}
+    }
+    if (ok) {
+	return static_cast<WANT*>(base);
+    }
+    if (throw_on_err) {
+	stringstream ss;
+	ss << "TObject not one of type: [";
+	string comma = "";
+	for (auto type_name : okay_types) {
+	    ss << comma << type_name;
+	    comma = ", ";
+	}
+        throw runtime_error(ss.str().c_str());
+    }
+    return nullptr;
+}
+
 void Data::load_waveform(const char* name, const char* title, double scale)
 {
     TObject* obj = rootFile->Get(name);
@@ -77,12 +109,7 @@ void Data::load_waveform(const char* name, const char* title, double scale)
     	// throw runtime_error(msg.c_str());
         obj = new TH2F(name, title, 4000,0,4000,9600,0,9600);
     }
-    TH2F* hist = dynamic_cast<TH2F*>(obj);
-    if (!hist) {
-    	string msg = "Not a TH2F: ";
-    	msg += name;
-    	throw runtime_error(msg.c_str());
-    }
+    auto hist = maybe_cast<TH2, TH2F>(obj, {"TH2F"}, true);
     hist->SetXTitle("channel");
     hist->SetYTitle("ticks");
     wfs.push_back( new Waveforms(hist, bad_channels, name, title, scale) );
@@ -99,12 +126,8 @@ void Data::load_rawwaveform(const char* name, const char* baseline_name)
         // throw runtime_error(msg.c_str());
         obj = new TH2I(name, "", 4000,0,4000,9600,0,9600);
     }
-    TH2I* hist = dynamic_cast<TH2I*>(obj);
-    if (!hist) {
-        string msg = "Not a TH2I: ";
-        msg += name;
-        throw runtime_error(msg.c_str());
-    }
+
+    auto hist = maybe_cast<TH2, TH2I>(obj, {"TH2I", "TH2F"}, true);
     hist->SetXTitle("channel");
     hist->SetYTitle("ticks");
 
@@ -139,18 +162,15 @@ void Data::load_threshold(const char* name)
         // throw runtime_error(msg.c_str());
         obj = new TH1I(name, "", 4000,0,4000);
     }
-    TH1* hist = dynamic_cast<TH1*>(obj);
-    if (hist && (hist->InheritsFrom("TH1F") || hist->InheritsFrom("TH1I"))) {
-        thresh_histos.push_back( (TH1I*) hist );
-        return;
-    }
-
-    string msg = "Neither a TH1I nor a TH1F: ";
-    msg += name;
-    throw runtime_error(msg.c_str());
+    auto hist = maybe_cast<TH1, TH1I>(obj, {"TH1I", "TH1F"}, true);
+    thresh_histos.push_back( hist );
 }
 
 Data::~Data()
 {
     delete rootFile;
 }
+// Local Variables:
+// mode: c++
+// c-basic-offset: 4
+// End:
