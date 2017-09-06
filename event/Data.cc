@@ -8,6 +8,7 @@
 #include "TH1I.h"
 #include "TFile.h"
 #include "TTree.h"
+#include "TString.h"
 
 #include <vector>
 #include <string>
@@ -102,12 +103,22 @@ void Data::load_waveform(const char* name, const char* title, double scale)
 {
     TObject* obj = rootFile->Get(name);
     if (!obj) {
-    	string msg = "Failed to get waveform ";
+    	TString msg = "Failed to get waveform ";
     	msg += name;
         msg += ", create dummy ...";
         cout << msg << endl;
     	// throw runtime_error(msg.c_str());
-        obj = new TH2F(name, title, 4000,0,4000,9600,0,9600);
+        int nChannels = 2400;
+        int nTDCs = 9594;
+        int firstChannel = 0;
+        if (msg.Contains("hv")) {
+            firstChannel = 2400;
+        }
+        else if (msg.Contains("hw")) {
+            firstChannel = 4800;
+            nChannels = 3456;
+        }
+        obj = new TH2F(name, title, nChannels,firstChannel-0.5,firstChannel+nChannels-0.5,nTDCs,0,nTDCs);
     }
     auto hist = maybe_cast<TH2, TH2F>(obj, {"TH2F"}, true);
     hist->SetXTitle("channel");
@@ -119,12 +130,22 @@ void Data::load_rawwaveform(const char* name, const char* baseline_name)
 {
     TObject* obj = rootFile->Get(name);
     if (!obj) {
-        string msg = "Failed to get waveform ";
+        TString msg = "Failed to get waveform ";
         msg += name;
         msg += ", create dummy ...";
         cout << msg << endl;
         // throw runtime_error(msg.c_str());
-        obj = new TH2I(name, "", 4000,0,4000,9600,0,9600);
+        int nChannels = 2400;
+        int nTDCs = 9594;
+        int firstChannel = 0;
+        if (msg.Contains("hv")) {
+            firstChannel = 2400;
+        }
+        else if (msg.Contains("hw")) {
+            firstChannel = 4800;
+            nChannels = 3456;
+        }
+        obj = new TH2I(name, "", nChannels,firstChannel-0.5,firstChannel+nChannels-0.5,nTDCs,0,nTDCs);
     }
 
     auto hist = maybe_cast<TH2, TH2I>(obj, {"TH2I", "TH2F"}, true);
