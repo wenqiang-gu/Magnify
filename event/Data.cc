@@ -22,7 +22,7 @@ using namespace std;
 Data::Data()
 {}
 
-Data::Data(const char* filename, const char* frame)
+Data::Data(const char* filename, const char* frame, int rebin)
 {
     rootFile = TFile::Open(filename);
     if (!rootFile) {
@@ -40,7 +40,7 @@ Data::Data(const char* filename, const char* frame)
 
     for (int iplane=0; iplane<3; ++iplane) {
         load_waveform(Form("h%c_%s", 'u'+iplane, frame),
-                      Form("%c Plane (Deconvoluted)", 'U'+iplane), 1./500);
+                      Form("%c Plane (Deconvoluted)", 'U'+iplane), 1./(500.*rebin/4.0));
     }
 
     load_rawwaveform("hu_orig", "hu_baseline");

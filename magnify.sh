@@ -10,13 +10,14 @@ else
 fi
 frame="${1:-decon}"
 startdir=$(pwd)
+rebin="${2:-4}"
 
-echo "Loading frame \"$frame\""
+echo "Loading frame \"$frame\" rebin \"$rebin\""
 
 cd $magnify_source/scripts
 
 echo $rootfile
 echo $frame
+echo $rebin
 
-
-root -l loadClasses.C Magnify.C'("'"$rootfile"'","'"$frame"'")'
+root -l loadClasses.C Magnify.C'("'"$rootfile"'","'"$frame"'", '$rebin')'
