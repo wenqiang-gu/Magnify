@@ -21,4 +21,9 @@ void loadClasses()
     gROOT->ProcessLine( load + prefix + "/ControlWindow.cc+" );
     gROOT->ProcessLine( load + prefix + "/MainWindow.cc+" );
     gROOT->ProcessLine( load + prefix + "/GuiController.cc+" );
+
+    prefix = "../tools/CellTree";
+    gROOT->ProcessLine( include + pwd + prefix );
+    gROOT->ProcessLine( load + prefix + "/CellEvent.cc+" );
+    gROOT->ProcessLine( load + prefix + "/MagnifyWriter.cc+" );
 }

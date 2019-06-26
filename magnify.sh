@@ -10,7 +10,7 @@ else
 fi
 frame="${1:-decon}"
 startdir=$(pwd)
-rebin="${2:-4}"
+rebin="${2:-1}"
 
 echo "Loading frame \"$frame\" rebin \"$rebin\""
 
