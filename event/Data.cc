@@ -30,7 +30,7 @@ Data::Data(const char* filename, const char* experiment, const char* frame, int 
     	msg += filename;
     	throw runtime_error(msg.c_str());
     }
-    expName = experiment;
+    expName = experiment;  // so far no special settings for different experiments.
 
     bad_channels = new BadChannels( (TTree*)rootFile->Get("T_bad") );
     // load_badchannels();
@@ -183,7 +183,7 @@ void Data::load_threshold(const char* name)
         msg += name;
         msg += ", create dummy ...";
         // throw runtime_error(msg.c_str());
-        obj = new TH1I(name, "", 4000,0,4000);
+        obj = new TH1I(name, "", 10000,0,10000);
     }
     auto hist = maybe_cast<TH1, TH1I>(obj, {"TH1I", "TH1F"}, true);
     thresh_histos.push_back( hist );

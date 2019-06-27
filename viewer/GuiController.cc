@@ -92,7 +92,13 @@ void GuiController::InitConnections()
     cw->timeRangeEntry[1]->SetNumber(data->wfs.at(0)->nTDCs);
 
     cw->channelEntry->Connect("ValueSet(Long_t)", "GuiController", this, "ChannelChanged()");
+    cw->channelEntry->SetLimitValues(
+        data->wfs.at(0)->firstChannel, 
+        data->wfs.at(2)->firstChannel + data->wfs.at(2)->nChannels - 1);
+
     cw->timeEntry->Connect("ValueSet(Long_t)", "GuiController", this, "TimeChanged()");
+    cw->timeEntry->SetLimitValues(0, data->wfs.at(0)->nTDCs);
+
     cw->badChanelButton->Connect("Clicked()", "GuiController", this, "UpdateShowBadChannel()");
     cw->badChanelButton->SetToolTipText(TString::Format("U: %lu, V: %lu, Y: %lu",
         data->wfs.at(0)->lines.size(),

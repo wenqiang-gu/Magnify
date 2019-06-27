@@ -136,8 +136,8 @@ void MagnifyWriter::WriteHist(string name, int planeIndex)
 		    for (int j=1; j<=nTDC; j++) {
 		    	int content = h->GetBinContent(j);
 		    	h_raw->SetBinContent(binX, j, content-baseline);
-		    	if (content>baseline+1) {
-		    		h_decon->SetBinContent(binX, j, content-baseline);
+		    	if (content>baseline+10) {
+		    		h_decon->SetBinContent(binX, j, (content-baseline)*125);
 		    	}
 		    }
 		}
