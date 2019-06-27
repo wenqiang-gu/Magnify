@@ -22,7 +22,7 @@ using namespace std;
 Data::Data()
 {}
 
-Data::Data(const char* filename, const char* frame, int rebin)
+Data::Data(const char* filename, const char* experiment, const char* frame, int rebin)
 {
     rootFile = TFile::Open(filename);
     if (!rootFile) {
@@ -30,6 +30,8 @@ Data::Data(const char* filename, const char* frame, int rebin)
     	msg += filename;
     	throw runtime_error(msg.c_str());
     }
+    expName = experiment;
+
     bad_channels = new BadChannels( (TTree*)rootFile->Get("T_bad") );
     // load_badchannels();
     load_runinfo();

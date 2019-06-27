@@ -9,25 +9,24 @@ class RawWaveforms;
 class BadChannels;
 
 #include <vector>
+#include <string>
 
 class Data {
 public:
     Data();
-    Data(const char* filename, const char* frame, int rebin);
+    Data(const char* filename, const char* experiment, const char* frame, int rebin);
 
     virtual ~Data();
 
     TFile *rootFile;
     vector<Waveforms*> wfs;
     BadChannels* bad_channels;
-    // vector<int> bad_channels;
-    // vector<int> bad_start;
-    // vector<int> bad_end;
     vector<RawWaveforms*> raw_wfs;
     vector<TH1I*> thresh_histos;
     int runNo;
     int subRunNo;
     int eventNo;
+    std::string expName;
 
 private:
     void load_waveform(const char* name, const char* title="", double scale=1);
