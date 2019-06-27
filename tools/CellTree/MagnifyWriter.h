@@ -21,11 +21,10 @@ public:
 
     //-------------------------------------
     MagnifyWriter();
-    MagnifyWriter(std::string filename);
-    MagnifyWriter(std::string filename, std::string experiment, int tpc=0);
+    MagnifyWriter(std::string filename, std::string outname, std::string experiment, int tpc=0);
     virtual ~MagnifyWriter();
 
-    void SetupIO(std::string filename);
+    void SetupIO(std::string filename, std::string outname);
     void SetupExperiment(std::string experiment, int tpc=0);
     void PrintInfo();
     void Write(int entry);

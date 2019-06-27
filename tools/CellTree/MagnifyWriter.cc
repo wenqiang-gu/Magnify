@@ -20,14 +20,9 @@ using namespace std;
 
 MagnifyWriter::MagnifyWriter(){}
 
-MagnifyWriter::MagnifyWriter(string filename)
+MagnifyWriter::MagnifyWriter(string filename, string outname, string experiment, int tpc)
 {
-	SetupIO(filename);
-}
-
-MagnifyWriter::MagnifyWriter(string filename, string experiment, int tpc)
-{
-	SetupIO(filename);	
+	SetupIO(filename, outname);	
 	SetupExperiment(experiment, tpc);
 }
 
@@ -36,9 +31,9 @@ MagnifyWriter::~MagnifyWriter()
 	outputFile->Close();
 }
 
-void MagnifyWriter::SetupIO(string filename) {
+void MagnifyWriter::SetupIO(string filename, string outname) {
 	ev = new CellEvent(filename.c_str());
-	outputFile = new TFile("magnify.root", "recreate");
+	outputFile = new TFile(outname.c_str(), "recreate");
 }
 
 void MagnifyWriter::SetupExperiment(string experiment, int tpc)
