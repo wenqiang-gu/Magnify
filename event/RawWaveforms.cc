@@ -39,6 +39,7 @@ void RawWaveforms::SetBaseline()
     hBaseline = new TH1I(fName+"_baseline", "", nChannels, -0.5+firstChannel, -0.5+firstChannel+nChannels);
     cout << "calculating baseline for " << fName << " ..." << endl;
     TH1I hf("hf","Bin Frequency",4096,0,4096); //12-bit ADC
+    TH1I hf2("hf","Bin Frequency",4096*4,0,4096*4); //14-bit ADC
     for (int chid=0; chid!=nChannels; chid++) {
         hf.Reset();
         for (int ibin=0; ibin!=nTDCs; ibin++) {
